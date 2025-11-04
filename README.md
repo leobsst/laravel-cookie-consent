@@ -1,7 +1,8 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
-  <a href="https://github.com/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version"></a>
+  <a href="https://packagist.org/packages/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/packagist/v/leobsst/laravel-cookie-consent.svg?style=flat-square" alt="Version"></a>
+  <a href="https://packagist.org/packages/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/packagist/dt/leobsst/laravel-cookie-consent.svg?style=flat-square" alt="Downloads"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
   <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.0-FF2D20?logo=laravel" alt="Laravel"></a>
   <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php" alt="PHP"></a>
