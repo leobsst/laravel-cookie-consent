@@ -4,7 +4,7 @@
   <a href="https://packagist.org/packages/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/packagist/v/leobsst/laravel-cookie-consent.svg?style=flat-square" alt="Version"></a>
   <a href="https://packagist.org/packages/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/packagist/dt/leobsst/laravel-cookie-consent.svg?style=flat-square" alt="Downloads"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
-  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.0-FF2D20?logo=laravel" alt="Laravel"></a>
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11.9+-FF2D20?logo=laravel" alt="Laravel"></a>
   <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php" alt="PHP"></a>
 </p>
 
@@ -26,8 +26,8 @@ A modern Laravel package for handling cookie consent with Google Tag Manager int
 ## Requirements
 
 - PHP 8.2 or higher
-- Laravel 12.0 or higher
-- Livewire 3.0 or higher
+- Laravel 11.9 or higher
+- Livewire 3.6.4 or higher
 - Tailwind CSS
 
 ## Installation
