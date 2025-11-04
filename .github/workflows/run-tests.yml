@@ -1,0 +1,78 @@
+name: run-tests
+
+on:
+  push:
+    paths:
+      - '**.php'
+      - '.github/workflows/run-tests.yml'
+      - 'phpunit.xml.dist'
+      - 'composer.json'
+      - 'composer.lock'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.4, 8.3, 8.2]
+        laravel: [12.*, 11.*]
+        stability: [prefer-stable]
+        include:
+          - laravel: 12.*
+            testbench: 10.*
+          - laravel: 11.*
+            testbench: 9.*
+
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: none
+
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Install dependencies
+        run: |
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+
+      - name: Execute tests
+        run: |
+          vendor/bin/pest --ci --no-coverage
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+
+      - name: Set artifact name
+        id: artifact-name
+        run: |
+          CLEAN_LARAVEL=$(echo "${{ matrix.laravel }}" | sed 's/\*//g' | sed 's/\.//g')
+          CLEAN_TESTBENCH=$(echo "${{ matrix.testbench }}" | sed 's/\*//g' | sed 's/\.//g')
+          echo "name=test-results-php${{ matrix.php }}-laravel${CLEAN_LARAVEL}-testbench${CLEAN_TESTBENCH}-${{ matrix.os }}" >> $GITHUB_OUTPUT
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: ${{ steps.artifact-name.outputs.name }}
+          path: |
+            build/
+            tests/
+          retention-days: 7
