@@ -75,7 +75,6 @@ Architecture tests verify that the code follows certain rules and conventions:
 Tests for `HandleCookieConsent`:
 
 - Sharing consent status with views
-- Sharing the `loadTrackingScripts` variable based on consent
 - Correctly passing the request to the next middleware
 - Handling different consent states (null, true, false)
 

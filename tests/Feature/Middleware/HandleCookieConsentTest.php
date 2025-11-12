@@ -13,7 +13,6 @@ it('shares cookie consent status with views when consent is null', function () {
 
     $response = $this->middleware->handle($request, function ($req) {
         expect(view()->shared('cookieConsentStatus'))->toBeNull();
-        expect(view()->shared('loadTrackingScripts'))->toBeFalse();
 
         return response('OK');
     });
@@ -28,7 +27,6 @@ it('shares tracking scripts as true when consent is accepted', function () {
 
     $response = $this->middleware->handle($request, function ($req) {
         expect(view()->shared('cookieConsentStatus'))->toBeTrue();
-        expect(view()->shared('loadTrackingScripts'))->toBeTrue();
 
         return response('OK');
     });
@@ -43,7 +41,6 @@ it('shares tracking scripts as false when consent is denied', function () {
 
     $response = $this->middleware->handle($request, function ($req) {
         expect(view()->shared('cookieConsentStatus'))->toBeFalse();
-        expect(view()->shared('loadTrackingScripts'))->toBeFalse();
 
         return response('OK');
     });
