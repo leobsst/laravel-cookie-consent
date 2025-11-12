@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.0.2 - 2025-11-12
+
+### What's Changed
+
+* Fix user consent not retrieved after page refresh
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v1.0.1...v1.0.2
+
 ## v1.0.1 - 2025-11-12
 
 ### What's Changed
