@@ -1,4 +1,4 @@
-@if(isset($loadTrackingScripts) && $loadTrackingScripts && $googleTagManagerId)
+@if($googleTagManagerId)
     <!-- Google Tag Manager -->
         <script>
             window.dataLayer = window.dataLayer || [];

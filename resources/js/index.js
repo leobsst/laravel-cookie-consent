@@ -10,7 +10,7 @@ document.addEventListener('livewire:initialized', () => {
                 gtag('consent', 'update', {
                     'functional_storage': 'granted',
                     'security_storage': 'granted',
-                    'analytics_storage': 'denied',
+                    'analytics_storage': 'granted',
                     'ad_storage': 'granted',
                     'ad_user_data': 'granted',
                     'ad_personalization': 'granted'

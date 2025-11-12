@@ -172,17 +172,6 @@ if ($consent === true) {
 }
 ```
 
-In Blade views, you can use the shared variable:
-
-```blade
-@if($loadTrackingScripts)
-    <!-- This will only render if user has accepted cookies -->
-    <script>
-        // Your custom tracking code
-    </script>
-@endif
-```
-
 ### Customizing the Banner
 
 You can customize the banner's appearance by publishing and modifying the views:
@@ -282,7 +271,6 @@ To use a completely custom view for the consent banner:
 
 The `HandleCookieConsent` middleware is automatically registered in the `web` middleware group. It:
 - Retrieves the consent status from the session
-- Shares `$loadTrackingScripts` with all views (true only if consent is accepted)
 - Shares `$cookieConsentStatus` with all views (true/false/null)
 
 ## FAQ

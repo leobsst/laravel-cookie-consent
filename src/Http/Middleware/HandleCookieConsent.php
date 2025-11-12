@@ -22,8 +22,6 @@ class HandleCookieConsent
         $consent = session('cookie_consent');
 
         // Share the consent status with all views
-        // Only load tracking scripts if consent is accepted
-        view()->share('loadTrackingScripts', $consent === true);
         view()->share('cookieConsentStatus', $consent);
 
         return $next($request);
