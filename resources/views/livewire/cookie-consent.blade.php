@@ -6,13 +6,13 @@
 
 <div>
     @if($loadScript)
-        @if($consent === null)
+        @if(request()->cookie('cookie_consent') === null)
         <div
             class="fixed left-0 bottom-0 p-4 z-30"
             x-cloak
             wire:ignore
-            x-data="{consent: @entangle('consent').live}"
-            x-show="consent == null">
+            x-data="{show: true}"
+            x-show="show">
             <div class="bg-zinc-50 dark:bg-gray-900 max-w-[30rem] h-fit rounded-md shadow-2xl p-4">
                 <svg
                     class="w-16 h-16"
@@ -160,7 +160,8 @@
                         <div class="flex mt-4 md:mt-0 justify-end">
                             <button
                                 title="{{ __('cookie-consent::translations.accept') }}"
-                                x-on:click="consent = '1'"
+                                x-on:click="show = false;"
+                                wire:click="updateConsent(true)"
                                 type="button"
                                 class="text-white px-3 py-2 rounded-md hover-opacity mr-4 whitespace-nowrap dark:bg-opacity-80"
                                 @style([
@@ -170,7 +171,8 @@
                             </button>
                             <button
                                 title="{{ __('cookie-consent::translations.refuse') }}"
-                                x-on:click="consent = '0'"
+                                x-on:click="show = false;"
+                                wire:click="updateConsent(false)"
                                 type="button"
                                 class="hover-opacity text-gray-700 dark:text-white whitespace-nowrap">
                                 {{ __('cookie-consent::translations.refuse') }}

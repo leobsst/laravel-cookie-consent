@@ -6,10 +6,10 @@
             gtag('consent', 'default', {
                 'functional_storage': 'granted',
                 'security_storage': 'granted',
-                'analytics_storage': @js($cookieConsentStatus === true ? 'granted' : 'denied'),
-                'ad_storage': @js($cookieConsentStatus === true ? 'granted' : 'denied'),
-                'ad_user_data': @js($cookieConsentStatus === true ? 'granted' : 'denied'),
-                'ad_personalization': @js($cookieConsentStatus === true ? 'granted' : 'denied')
+                'analytics_storage': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
+                'ad_storage': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
+                'ad_user_data': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
+                'ad_personalization': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied')
             });
         </script>
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
