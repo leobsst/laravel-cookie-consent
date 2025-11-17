@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.5 + v1.0.6 - 2025-11-17
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v1.0.4...v1.0.6
+
 ## v1.0.4 - 2025-11-17
 
 **Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v1.0.3...v1.0.4
