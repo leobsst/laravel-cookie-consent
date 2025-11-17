@@ -1,10 +1,11 @@
 @if($loadScript)
-    @push('scripts')
-        <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
-    @endpush
+@push('scripts')
+    <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
+@endpush
+@endif
 
 <div>
-    @if($consent === null)
+    @if($consent === null && $loadScript)
     <div
         class="fixed left-0 bottom-0 p-4 z-30"
         x-cloak
@@ -180,4 +181,3 @@
     </div>
     @endif
 </div>
-@endif
