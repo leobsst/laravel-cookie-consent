@@ -18,7 +18,7 @@ A modern Laravel package for handling cookie consent with Google Tag Manager int
 - Simple binary consent system (Accept/Refuse)
 - Automatic Google Tag Manager integration
 - Consent Mode v2 support for Google Analytics
-- Persistent user preferences stored in session
+- Persistent user preferences stored in cookies (1 year duration)
 - Tailwind CSS styling with customizable accent color
 - Easy integration with existing Laravel projects
 - Multi-language support (EN, FR, IT, ES, DE)
@@ -123,9 +123,9 @@ The package implements a simple binary consent system:
 
 - **User accepts**: Google Tag Manager consent is updated to grant `ad_storage`, `ad_user_data`, and `ad_personalization` (while `analytics_storage` remains denied)
 - **User refuses**: All non-essential consents remain denied
-- **Consent status**: Stored in the session as `cookie_consent` (true/false/null)
+- **Consent status**: Stored in a cookie named `cookie_consent` (value: '1' for accepted, '0' for refused, null when not set) with 1 year duration
 
-The middleware automatically shares the consent status with all views, ensuring tracking scripts only load when consent is granted.
+The middleware automatically shares the consent status from the cookie with all views, ensuring tracking scripts only load when consent is granted.
 
 ### Complete Example
 
@@ -157,18 +157,23 @@ Here's a complete example of a layout file with the cookie consent banner:
 
 ### Checking User Consent
 
-You can check the user's consent status in your application using the session:
+You can check the user's consent status in your application using the cookie or the shared view variable:
 
 ```php
-// Check if user has given consent
-$consent = session('cookie_consent');
+// Option 1: Check the cookie directly
+$consent = request()->cookie('cookie_consent');
 
-if ($consent === true) {
+if ($consent === '1') {
     // User has accepted cookies
-} elseif ($consent === false) {
+} elseif ($consent === '0') {
     // User has refused cookies
 } else {
     // User hasn't made a choice yet (null)
+}
+
+// Option 2: Use the shared view variable (available in all views via middleware)
+if ($cookieConsentStatus === '1') {
+    // User has accepted cookies
 }
 ```
 
@@ -270,8 +275,8 @@ To use a completely custom view for the consent banner:
 ### Middleware
 
 The `HandleCookieConsent` middleware is automatically registered in the `web` middleware group. It:
-- Retrieves the consent status from the session
-- Shares `$cookieConsentStatus` with all views (true/false/null)
+- Retrieves the consent status from the `cookie_consent` cookie
+- Shares `$cookieConsentStatus` with all views ('1' for accepted, '0' for refused, null when not set)
 
 ## FAQ
 
@@ -281,10 +286,17 @@ The package currently sets `analytics_storage` to denied by default to provide a
 
 ### How do I reset a user's consent?
 
-You can clear the session:
+You can clear the cookie by expiring it:
 
 ```php
-session()->forget('cookie_consent');
+use Illuminate\Support\Facades\Cookie;
+
+// Queue cookie for deletion
+Cookie::queue(Cookie::forget('cookie_consent'));
+
+// Or in a controller response
+return response()->json(['success' => true])
+    ->withCookie(Cookie::forget('cookie_consent'));
 ```
 
 ### Can I use this without Google Tag Manager?
