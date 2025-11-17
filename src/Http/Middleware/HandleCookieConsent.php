@@ -19,10 +19,8 @@ class HandleCookieConsent
     {
         // Check if user has given consent (either true or false)
         // null means no choice has been made yet
-        $consent = session('cookie_consent');
-
         // Share the consent status with all views
-        view()->share('cookieConsentStatus', $consent);
+        view()->share('cookieConsentStatus', $request->cookie('cookie_consent'));
 
         return $next($request);
     }

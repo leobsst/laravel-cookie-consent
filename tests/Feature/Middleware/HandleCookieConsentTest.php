@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent;
 
 beforeEach(function () {
@@ -9,7 +10,7 @@ beforeEach(function () {
 });
 
 it('shares cookie consent status with views when consent is null', function () {
-    $request = request();
+    $request = Request::create('/', 'GET');
 
     $response = $this->middleware->handle($request, function ($req) {
         expect(view()->shared('cookieConsentStatus'))->toBeNull();
@@ -20,13 +21,12 @@ it('shares cookie consent status with views when consent is null', function () {
     expect($response->getContent())->toBe('OK');
 });
 
-it('shares tracking scripts as true when consent is accepted', function () {
-    session(['cookie_consent' => true]);
-
-    $request = request();
+it('shares cookie consent status as true when consent is accepted', function () {
+    $request = Request::create('/', 'GET');
+    $request->cookies->set('cookie_consent', '1');
 
     $response = $this->middleware->handle($request, function ($req) {
-        expect(view()->shared('cookieConsentStatus'))->toBeTrue();
+        expect(view()->shared('cookieConsentStatus'))->toBe('1');
 
         return response('OK');
     });
@@ -34,13 +34,12 @@ it('shares tracking scripts as true when consent is accepted', function () {
     expect($response->getContent())->toBe('OK');
 });
 
-it('shares tracking scripts as false when consent is denied', function () {
-    session(['cookie_consent' => false]);
-
-    $request = request();
+it('shares cookie consent status as false when consent is denied', function () {
+    $request = Request::create('/', 'GET');
+    $request->cookies->set('cookie_consent', '0');
 
     $response = $this->middleware->handle($request, function ($req) {
-        expect(view()->shared('cookieConsentStatus'))->toBeFalse();
+        expect(view()->shared('cookieConsentStatus'))->toBe('0');
 
         return response('OK');
     });
@@ -49,7 +48,7 @@ it('shares tracking scripts as false when consent is denied', function () {
 });
 
 it('passes the request through to the next middleware', function () {
-    $request = request();
+    $request = Request::create('/', 'GET');
     $nextCalled = false;
 
     $this->middleware->handle($request, function ($req) use (&$nextCalled) {
@@ -62,7 +61,7 @@ it('passes the request through to the next middleware', function () {
 });
 
 it('returns the response from the next middleware', function () {
-    $request = request();
+    $request = Request::create('/', 'GET');
 
     $response = $this->middleware->handle($request, function ($req) {
         return response('Custom response', 201);

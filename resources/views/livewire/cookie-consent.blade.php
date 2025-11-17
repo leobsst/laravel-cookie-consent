@@ -160,17 +160,17 @@
                         <div class="flex mt-4 md:mt-0 justify-end">
                             <button
                                 title="{{ __('cookie-consent::translations.accept') }}"
-                                x-on:click="consent = true"
+                                x-on:click="consent = '1'"
                                 type="button"
                                 class="text-white px-3 py-2 rounded-md hover-opacity mr-4 whitespace-nowrap dark:bg-opacity-80"
                                 @style([
-                                    ('background-color: ' . config('cookie-consent.ACCENT_COLOR')) => config('cookie-consent.ACCENT_COLOR'), 
+                                    ('background-color: ' . config('cookie-consent.ACCENT_COLOR')) => config('cookie-consent.ACCENT_COLOR'),
                                 ])>
                                 {{ __('cookie-consent::translations.accept') }}
                             </button>
                             <button
                                 title="{{ __('cookie-consent::translations.refuse') }}"
-                                x-on:click="consent = false"
+                                x-on:click="consent = '0'"
                                 type="button"
                                 class="hover-opacity text-gray-700 dark:text-white whitespace-nowrap">
                                 {{ __('cookie-consent::translations.refuse') }}
