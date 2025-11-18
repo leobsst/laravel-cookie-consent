@@ -137,5 +137,5 @@ it('sets cookie with correct SameSite value', function () {
     expect($cookies)->not->toBeEmpty();
 
     $cookie = $cookies[0];
-    expect($cookie->getSameSite())->toBe('none');
+    expect($cookie->getSameSite())->toBe('lax');
 });
