@@ -34,8 +34,8 @@ class CookieConsent extends Component
             $consent ? CookieConsentEnum::FULL->value : CookieConsentEnum::NONE->value,
             config('cookie-consent.duration', 60 * 24 * 365),
             config('session.path', '/'),
-            config('session.domain', null),
-            config('session.secure', true),
+            config('session.domain'),
+            true,
             config('session.http_only', true),
             false,
             config('cookie-consent.same_site', 'Lax')
