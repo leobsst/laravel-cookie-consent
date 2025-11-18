@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
+use Leobsst\LaravelCookieConsent\Enums\CookieConsentEnum;
 use Livewire\Component;
 
 class CookieConsent extends Component
@@ -30,14 +31,14 @@ class CookieConsent extends Component
     {
         Cookie::queue(Cookie::make(
             'cookie_consent',
-            $consent ? 'full' : 'none',
-            (60 * 24 * 365),
-            '/',
-            null,
-            true,
+            $consent ? CookieConsentEnum::FULL->value : CookieConsentEnum::NONE->value,
+            config('cookie-consent.duration', 60 * 24 * 365),
+            config('session.path', '/'),
+            config('session.domain', null),
+            config('session.secure', true),
+            config('session.http_only', true),
             false,
-            false,
-            'None'
+            config('cookie-consent.same_site', 'Lax')
         ));
 
         $this->dispatch('cookie-consent-updated', consent: $consent);

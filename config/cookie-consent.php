@@ -52,5 +52,34 @@ return [
     | You can specify any valid CSS color value (e.g., hex, rgb).
     |
     */
+
     'ACCENT_COLOR' => env('COOKIE_CONSENT_ACCENT_COLOR', '#3490dc'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cookie duration configuration
+    |--------------------------------------------------------------------------
+    |
+    | This section can be used to define duration for the cookie consent cookie.
+    |
+    */
+
+    'duration' => (60 * 24 * 365), // 1 year in minutes
+
+    /*
+    |--------------------------------------------------------------------------
+    | Same-Site Cookies
+    |--------------------------------------------------------------------------
+    |
+    | This option determines how your cookies behave when cross-site requests
+    | take place, and can be used to mitigate CSRF attacks. By default, we
+    | will set this value to "None" which will allow cookies to be sent in all
+    |
+    | See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
+    |
+    | Supported: "lax", "strict", "none", null
+    |
+    */
+
+    'same_site' => 'Lax',
 ];
