@@ -68,7 +68,7 @@ jobs:
           echo "name=test-results-php${{ matrix.php }}-laravel${CLEAN_LARAVEL}-testbench${CLEAN_TESTBENCH}-${{ matrix.os }}" >> $GITHUB_OUTPUT
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: ${{ steps.artifact-name.outputs.name }}
