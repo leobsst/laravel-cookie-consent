@@ -7,9 +7,9 @@
         secure: {{ request()->isSecure() ? 'true' : 'false' }},
     };
 </script>
-@push('scripts')
+@once
     <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
-@endpush
+@endonce
 @endif
 
 <div>

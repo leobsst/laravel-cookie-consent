@@ -90,7 +90,7 @@ This will publish the config file and assets, then ask you to star the repositor
 GOOGLE_TAG_MANAGER_ID=GTM-XXXXXXX
 ```
 
-2. **Add the scripts directive, the banner component, and the scripts stack to your layout:**
+2. **Add the scripts directive and the banner component to your layout:**
 
 ```blade
 <!DOCTYPE html>
@@ -104,16 +104,9 @@ GOOGLE_TAG_MANAGER_ID=GTM-XXXXXXX
 
     <!-- Cookie Consent Banner -->
     <x-cookie-consent::cookie-banner />
-
-    <!-- Required: scripts stack for the banner JS -->
-    @stack('scripts')
 </body>
 </html>
 ```
-
-> [!IMPORTANT]
->
-> `@stack('scripts')` must be present in your layout. The banner pushes its JavaScript file to this stack.
 
 The banner automatically appears for users who have not yet set their cookie preferences.
 
@@ -139,8 +132,6 @@ The banner automatically appears for users who have not yet set their cookie pre
 
     {{-- Cookie Consent Banner --}}
     <x-cookie-consent::cookie-banner />
-
-    @stack('scripts')
 </body>
 </html>
 ```
@@ -149,7 +140,7 @@ The banner automatically appears for users who have not yet set their cookie pre
 
 1. `@cookieConsentScripts` (or `<x-cookie-consent::scripts />`) injects the GTM snippet with `gtag('consent', 'default', ...)`. The initial state depends on the `cookie_consent` cookie already being set (e.g. returning visitors).
 
-2. `<x-cookie-consent::cookie-banner />` renders the banner only when GTM is configured **and** the user has not yet made a choice. It also injects a small `window.CookieConsent` config object (cookie name, duration, SameSite, secure flag).
+2. `<x-cookie-consent::cookie-banner />` renders the banner only when GTM is configured **and** the user has not yet made a choice. It also injects a small `window.CookieConsent` config object (cookie name, duration, SameSite, secure flag) and the banner's JavaScript inline.
 
 3. When the user clicks Accept or Refuse, the bundled `cookie-consent.js` script:
    - Writes the `cookie_consent` cookie directly in the browser (non-HttpOnly so it remains readable by JS on subsequent page loads)
