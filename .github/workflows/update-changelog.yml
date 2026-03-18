@@ -23,11 +23,13 @@ jobs:
           fetch-depth: 0
 
       - name: Show release context
+        env:
+          RELEASE_BODY: ${{ github.event.release.body }}
         run: |
           echo "release name: ${{ github.event.release.name }}"
           echo "release tag:  ${{ github.event.release.tag_name }}"
           echo "release body: <<EOF"
-          echo "${{ github.event.release.body }}"
+          echo "$RELEASE_BODY"
           echo "EOF"
 
       - name: Update Changelog
