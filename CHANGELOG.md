@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.0.1 - 2026-03-18
+
+### Fixed
+
+- Banner's JavaScript (`cookie-consent.js`) is now injected inline via `@once` instead of `@push('scripts')`. This fixes `window.__cookieConsent is undefined` errors in layouts that use the anonymous component pattern (`<x-layout>` with `{{ $slot }}`), where `@stack('scripts')` in the `<head>` is rendered before slot content is processed, silently dropping the pushed script tag.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.0...v2.0.1
+
 ## v2.0.0 - 2026-03-18
 
 ### Breaking Changes
