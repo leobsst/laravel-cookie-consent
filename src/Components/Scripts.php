@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Leobsst\LaravelCookieConsent\Components;
 
 use Illuminate\View\Component;
-use Illuminate\View\Factory;
 use Illuminate\View\View;
 
 final class Scripts extends Component
@@ -14,7 +13,7 @@ final class Scripts extends Component
         private ?string $googleTagManagerId = null
     ) {}
 
-    public function render(): View | Factory
+    public function render(): View
     {
         /** @var view-string */
         $view = 'cookie-consent::components.scripts';

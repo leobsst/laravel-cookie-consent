@@ -6,7 +6,6 @@ namespace Leobsst\LaravelCookieConsent\Components;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Component;
-use Illuminate\View\Factory;
 use Illuminate\View\View;
 
 final class CookieBanner extends Component
@@ -37,7 +36,7 @@ final class CookieBanner extends Component
         $this->sameSite = config('cookie-consent.same_site', 'Lax');
     }
 
-    public function render(): View | Factory
+    public function render(): View
     {
         /** @var view-string */
         $view = config('cookie-consent.CONSENT_BANNER_VIEW', 'cookie-consent::components.cookie-banner');
