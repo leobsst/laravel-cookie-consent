@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\View\View;
 use Leobsst\LaravelCookieConsent\Components\Scripts;
 
 it('can instantiate the Scripts component', function () {
@@ -21,7 +22,7 @@ it('renders the scripts view', function () {
     $component = new Scripts;
     $view = $component->render();
 
-    expect($view)->toBeInstanceOf(\Illuminate\View\View::class);
+    expect($view)->toBeInstanceOf(View::class);
     expect($view->name())->toBe('cookie-consent::components.scripts');
 });
 

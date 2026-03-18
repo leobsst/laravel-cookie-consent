@@ -72,5 +72,5 @@ it('loads package translations', function () {
 it('registers Blade components', function () {
     $component = app()->make(Scripts::class);
 
-    expect($component)->toBeInstanceOf(\Leobsst\LaravelCookieConsent\Components\Scripts::class);
+    expect($component)->toBeInstanceOf(Scripts::class);
 });
