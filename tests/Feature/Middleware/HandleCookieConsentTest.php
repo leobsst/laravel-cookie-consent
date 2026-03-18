@@ -7,6 +7,11 @@ use Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent;
 
 beforeEach(function () {
     $this->middleware = new HandleCookieConsent;
+    unset($_COOKIE['cookie_consent']);
+});
+
+afterEach(function () {
+    unset($_COOKIE['cookie_consent']);
 });
 
 it('shares cookie consent status with views when consent is null', function () {
@@ -21,12 +26,12 @@ it('shares cookie consent status with views when consent is null', function () {
     expect($response->getContent())->toBe('OK');
 });
 
-it('shares cookie consent status as true when consent is accepted', function () {
+it('shares cookie consent status as full when consent is accepted', function () {
+    $_COOKIE['cookie_consent'] = 'full';
     $request = Request::create('/', 'GET');
-    $request->cookies->set('cookie_consent', '1');
 
     $response = $this->middleware->handle($request, function ($req) {
-        expect(view()->shared('cookieConsentStatus'))->toBe('1');
+        expect(view()->shared('cookieConsentStatus'))->toBe('full');
 
         return response('OK');
     });
@@ -34,12 +39,12 @@ it('shares cookie consent status as true when consent is accepted', function () 
     expect($response->getContent())->toBe('OK');
 });
 
-it('shares cookie consent status as false when consent is denied', function () {
+it('shares cookie consent status as none when consent is denied', function () {
+    $_COOKIE['cookie_consent'] = 'none';
     $request = Request::create('/', 'GET');
-    $request->cookies->set('cookie_consent', '0');
 
     $response = $this->middleware->handle($request, function ($req) {
-        expect(view()->shared('cookieConsentStatus'))->toBe('0');
+        expect(view()->shared('cookieConsentStatus'))->toBe('none');
 
         return response('OK');
     });
