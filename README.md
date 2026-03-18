@@ -10,24 +10,23 @@
 
 <h1 style="text-align: center;">Laravel Cookie Consent</h1>
 
-A modern Laravel package for handling cookie consent with Google Tag Manager integration. This package provides a Livewire-based cookie consent banner with built-in support for Google Consent Mode v2, making GDPR compliance simple and straightforward.
+A lightweight Laravel package for handling cookie consent with Google Tag Manager integration. No Livewire required — the banner is a pure Blade component with vanilla JavaScript, making it usable in any Laravel project.
 
 ## Features
 
-- Livewire-based interactive cookie consent banner
+- Zero Livewire dependency — pure Blade component + vanilla JS
 - Simple binary consent system (Accept/Refuse)
-- Automatic Google Tag Manager integration
-- Consent Mode v2 support for Google Analytics
-- Persistent user preferences stored in cookies (1 year duration)
+- Automatic Google Tag Manager integration with Consent Mode v2
+- Cookie set client-side (non-HttpOnly, readable by JS)
+- Persistent user preferences stored in cookies (1 year by default)
 - Tailwind CSS styling with customizable accent color
-- Easy integration with existing Laravel projects
+- Dark mode support
 - Multi-language support (EN, FR, IT, ES, DE)
 
 ## Requirements
 
 - PHP 8.2 or higher
 - Laravel 11.9 or higher
-- Livewire 3.6.4 or higher
 - Tailwind CSS
 
 ## Installation
@@ -44,34 +43,30 @@ composer require leobsst/laravel-cookie-consent
 php artisan vendor:publish --tag=cookie-consent-assets
 ```
 
-This publishes:
-- `public/vendor/cookie-consent/laravel-cookie-consent.js` - JavaScript file that handles Google Tag Manager consent updates
+This publishes `public/vendor/cookie-consent/cookie-consent.js`, the JavaScript file that handles cookie writing and Google Tag Manager consent updates.
 
-### Step 3: Publish config file (highly recommended)
+### Step 3: Publish Config File (Recommended)
 
 ```bash
 php artisan vendor:publish --tag=cookie-consent-config
 ```
 
-This will create a `config/cookie-consent.php` file where you can customize:
+This creates `config/cookie-consent.php` where you can customize:
 
-- **GOOGLE_TAG_MANAGER_ID**: Your Google Tag Manager ID (GTM-XXXXXXX)
+- **GOOGLE_TAG_MANAGER_ID**: Your GTM container ID (e.g. `GTM-XXXXXXX`)
 - **LEARN_MORE_LINK**: URL or route name for the "Learn more" link (default: `/privacy-policy`)
-- **CONSENT_BANNER_VIEW**: Custom view for the consent banner
-- **ACCENT_COLOR**: Accent color for buttons and links (default: `#3490dc`)
+- **CONSENT_BANNER_VIEW**: Override the banner view
+- **ACCENT_COLOR**: Button and link color (default: `#3490dc`)
+- **duration**: Cookie lifetime in minutes (default: 1 year)
+- **same_site**: SameSite cookie attribute (default: `Lax`)
 
-### Alternative: Use Install Command
-
-You can also use the built-in install command which will guide you through the setup:
+### Alternative: Use the Install Command
 
 ```bash
 php artisan cookie-consent:install
 ```
 
-This command will:
-- Publish the configuration file
-- Publish the package assets
-- Ask you to star the repository on GitHub
+This will publish the config file and assets, then ask you to star the repository on GitHub.
 
 ## Configuration
 
@@ -79,57 +74,50 @@ This command will:
 
 > [!IMPORTANT]
 >
-> To ensure the package's views are properly styled with Tailwind CSS, you need to add the following directive to your project's `app.css` file
+> Add the following to your `app.css` so Tailwind processes the banner's utility classes:
 
 ```css
-/* COMPILE TAILWINDCSS DIRECTIVES IN VIEWS */
 @source '../../../../vendor/leobsst/laravel-cookie-consent/resources/views/**/*.blade.php';
 ```
-
-This ensures that Tailwind CSS processes the utility classes used in the cookie consent banner.
 
 ## Usage
 
 ### Basic Usage
 
-1. **Add the Google Tag Manager ID to your `.env` file:**
+1. **Add your Google Tag Manager ID to `.env`:**
 
 ```env
 GOOGLE_TAG_MANAGER_ID=GTM-XXXXXXX
 ```
 
-2. **Include the cookie consent scripts and component in your layout file:**
+2. **Add the scripts directive, the banner component, and the scripts stack to your layout:**
 
 ```blade
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Your head content -->
+    <!-- Google Tag Manager with Consent Mode v2 -->
     @cookieConsentScripts
 </head>
 <body>
     <!-- Your content -->
 
-    <livewire:laravel-cookie-consent::cookie-consent />
+    <!-- Cookie Consent Banner -->
+    <x-cookie-consent::cookie-banner />
+
+    <!-- Required: scripts stack for the banner JS -->
+    @stack('scripts')
 </body>
 </html>
 ```
 
-The `@cookieConsentScripts` directive loads Google Tag Manager with Consent Mode v2 enabled. The banner will automatically appear for users who haven't set their cookie preferences yet.
+> [!IMPORTANT]
+>
+> `@stack('scripts')` must be present in your layout. The banner pushes its JavaScript file to this stack.
 
-### How It Works
-
-The package implements a simple binary consent system:
-
-- **User accepts**: Google Tag Manager consent is updated to grant `ad_storage`, `ad_user_data`, and `ad_personalization` (while `analytics_storage` remains denied)
-- **User refuses**: All non-essential consents remain denied
-- **Consent status**: Stored in a cookie named `cookie_consent` (value: '1' for accepted, '0' for refused, null when not set) with 1 year duration
-
-The middleware automatically shares the consent status from the cookie with all views, ensuring tracking scripts only load when consent is granted.
+The banner automatically appears for users who have not yet set their cookie preferences.
 
 ### Complete Example
-
-Here's a complete example of a layout file with the cookie consent banner:
 
 ```blade
 <!DOCTYPE html>
@@ -150,76 +138,99 @@ Here's a complete example of a layout file with the cookie consent banner:
     </div>
 
     {{-- Cookie Consent Banner --}}
-    <livewire:laravel-cookie-consent::cookie-consent />
+    <x-cookie-consent::cookie-banner />
+
+    @stack('scripts')
 </body>
 </html>
 ```
 
+### How It Works
+
+1. `@cookieConsentScripts` (or `<x-cookie-consent::scripts />`) injects the GTM snippet with `gtag('consent', 'default', ...)`. The initial state depends on the `cookie_consent` cookie already being set (e.g. returning visitors).
+
+2. `<x-cookie-consent::cookie-banner />` renders the banner only when GTM is configured **and** the user has not yet made a choice. It also injects a small `window.CookieConsent` config object (cookie name, duration, SameSite, secure flag).
+
+3. When the user clicks Accept or Refuse, the bundled `cookie-consent.js` script:
+   - Writes the `cookie_consent` cookie directly in the browser (non-HttpOnly so it remains readable by JS on subsequent page loads)
+   - Calls `gtag('consent', 'update', ...)` to update consent in the current GTM session
+   - Hides the banner instantly without a page reload
+
 ### Checking User Consent
 
-You can check the user's consent status in your application using the cookie or the shared view variable:
+The `HandleCookieConsent` middleware shares `$cookieConsentStatus` with all views:
 
 ```php
-// Option 1: Check the cookie directly
-$consent = request()->cookie('cookie_consent');
-
-if ($consent === '1') {
-    // User has accepted cookies
-} elseif ($consent === '0') {
-    // User has refused cookies
-} else {
-    // User hasn't made a choice yet (null)
-}
-
-// Option 2: Use the shared view variable (available in all views via middleware)
-if ($cookieConsentStatus === '1') {
-    // User has accepted cookies
-}
+// In a Blade view
+@if($cookieConsentStatus === 'full')
+    {{-- User has accepted all cookies --}}
+@endif
 ```
+
+You can also read the cookie directly via the `$_COOKIE` superglobal:
+
+```php
+$consent = $_COOKIE['cookie_consent'] ?? null;
+// 'full'  — accepted
+// 'none'  — refused
+// null    — not yet set
+```
+
+> [!NOTE]
+> Do **not** use `request()->cookie('cookie_consent')` — Laravel's `EncryptCookies` middleware will try to decrypt the value and return `null`, because the cookie is written as plain text by the browser-side JavaScript. Reading it via `$_COOKIE` bypasses decryption and returns the raw value correctly.
 
 ### Customizing the Banner
 
-You can customize the banner's appearance by publishing and modifying the views:
+Publish the views to modify them:
 
 ```bash
 php artisan vendor:publish --tag=cookie-consent-views
 ```
 
-This will publish the views to `resources/views/vendor/cookie-consent/` where you can customize them to match your design.
+This copies the views to `resources/views/vendor/cookie-consent/`. You can also point to a completely custom view via the config:
+
+```php
+// config/cookie-consent.php
+'CONSENT_BANNER_VIEW' => 'my-theme.cookie-banner',
+```
+
+Your custom view receives these variables from `CookieBanner`:
+
+| Variable | Type | Description |
+|---|---|---|
+| `$loadScript` | `bool` | Whether GTM is configured |
+| `$learnMoreLink` | `?string` | Resolved URL for the "Learn more" link |
+| `$accentColor` | `?string` | CSS color value |
+| `$cookieDuration` | `int` | Cookie lifetime in **seconds** |
+| `$sameSite` | `string` | SameSite attribute value |
 
 ### Translations
 
-The package includes translations for the following languages:
-- English (en)
-- French (fr)
-- Italian (it)
-- Spanish (es)
-- German (de)
+The banner uses the locale set in `config('app.locale')`. Available languages: English (`en`), French (`fr`), Italian (`it`), Spanish (`es`), German (`de`).
 
-The banner automatically uses the language configured in your Laravel application (`config('app.locale')`).
-
-**Available translation keys:**
-- `cookie-consent::translations.description`: Description of cookie usage
-- `cookie-consent::translations.question`: Question asking for consent
-- `cookie-consent::translations.learn_more`: "Learn more" link text
-- `cookie-consent::translations.accept`: "Accept" button text
-- `cookie-consent::translations.refuse`: "Refuse" button text
-
-#### Publishing Translations
-
-To customize the translations, publish the language files:
+To publish and customize translation files:
 
 ```bash
 php artisan vendor:publish --tag=cookie-consent-lang
 ```
 
-This will publish the translation files to `resources/lang/vendor/cookie-consent/` where you can modify them.
+Files are published to `resources/lang/vendor/cookie-consent/`.
+
+**Translation keys:**
+
+| Key | Default (EN) |
+|---|---|
+| `cookie-consent::translations.description` | Our website uses cookies... |
+| `cookie-consent::translations.question` | Do you accept the use of these cookies? |
+| `cookie-consent::translations.learn_more` | Learn more |
+| `cookie-consent::translations.accept` | Accept |
+| `cookie-consent::translations.refuse` | Deny |
 
 ## Google Tag Manager Consent Mode
 
-The package implements Google Consent Mode v2 with the following default settings:
+The package implements Google Consent Mode v2.
 
-**When user hasn't decided (default state):**
+**Default state (user has not yet decided):**
 ```javascript
 {
   'functional_storage': 'granted',
@@ -236,7 +247,7 @@ The package implements Google Consent Mode v2 with the following default setting
 {
   'functional_storage': 'granted',
   'security_storage': 'granted',
-  'analytics_storage': 'denied',
+  'analytics_storage': 'granted',
   'ad_storage': 'granted',
   'ad_user_data': 'granted',
   'ad_personalization': 'granted'
@@ -244,71 +255,56 @@ The package implements Google Consent Mode v2 with the following default setting
 ```
 
 **When user refuses:**
-All non-essential consents remain denied.
+```javascript
+{
+  'functional_storage': 'granted',
+  'security_storage': 'granted',
+  'analytics_storage': 'denied',
+  'ad_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied'
+}
+```
 
-The JavaScript file ([resources/js/index.js](resources/js/index.js)) listens for Livewire events and updates the Google Tag Manager consent accordingly.
+> **Note:** On a first-time accept, if `gtag` is not yet loaded (GTM script hasn't initialized), the page will reload once so that GTM boots with the correct consent state.
 
 ## Advanced Configuration
 
 ### Environment Variables
 
-Add these variables to your `.env` file:
-
 ```env
 # Required for Google Tag Manager integration
 GOOGLE_TAG_MANAGER_ID=GTM-XXXXXXX
 
-# Optional customizations
+# Optional
 COOKIE_LEARN_MORE_LINK=/privacy-policy
-COOKIE_CONSENT_BANNER_VIEW=cookie-consent::livewire.cookie-consent
+COOKIE_CONSENT_BANNER_VIEW=cookie-consent::components.cookie-banner
 COOKIE_CONSENT_ACCENT_COLOR=#3490dc
 ```
 
-### Custom View
-
-To use a completely custom view for the consent banner:
-
-1. Create your custom view file
-2. Set the `CONSENT_BANNER_VIEW` in your config file or `.env`
-3. Ensure your view uses the same Livewire component properties (`$consent`, `$loadScript`, `$learnMoreLink`)
-
-### Middleware
-
-The `HandleCookieConsent` middleware is automatically registered in the `web` middleware group. It:
-- Retrieves the consent status from the `cookie_consent` cookie
-- Shares `$cookieConsentStatus` with all views ('1' for accepted, '0' for refused, null when not set)
-
-## FAQ
-
-### Why is analytics_storage always denied?
-
-The package currently sets `analytics_storage` to denied by default to provide a conservative approach to GDPR compliance. You can modify this behavior in the JavaScript file if your use case requires it.
-
-### How do I reset a user's consent?
-
-You can clear the cookie by expiring it:
+### Resetting a User's Consent
 
 ```php
 use Illuminate\Support\Facades\Cookie;
 
-// Queue cookie for deletion
 Cookie::queue(Cookie::forget('cookie_consent'));
-
-// Or in a controller response
-return response()->json(['success' => true])
-    ->withCookie(Cookie::forget('cookie_consent'));
 ```
+
+## FAQ
+
+### Does this package require Livewire?
+
+No. As of v2, Livewire is not required. The banner is a Blade component and all consent logic runs in vanilla JavaScript.
 
 ### Can I use this without Google Tag Manager?
 
-Yes! Simply don't set the `GOOGLE_TAG_MANAGER_ID` environment variable. The banner will still work and store the user's consent preference, which you can use to conditionally load your own tracking scripts.
+Yes. Simply don't set `GOOGLE_TAG_MANAGER_ID`. The banner will not appear (it only renders when GTM is configured), but the `cookie_consent` cookie will still be available for you to use in your own scripts.
 
 ### How do I style the banner to match my design?
 
-You have several options:
-1. Use the `ACCENT_COLOR` config to change the button/link color
-2. Publish the views and modify the Tailwind classes
-3. Create a completely custom view and set `CONSENT_BANNER_VIEW`
+1. Use `ACCENT_COLOR` in the config to change the button/link color.
+2. Publish the views and edit the Tailwind classes.
+3. Create a completely custom view and point `CONSENT_BANNER_VIEW` to it.
 
 ## Testing
 
@@ -318,11 +314,11 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Security
 
-If you've found a bug regarding security please mail [contact@leobsst.fr](mailto:contact@leobsst.fr) instead of using the issue tracker.
+If you find a security vulnerability, please email [contact@leobsst.fr](mailto:contact@leobsst.fr) instead of using the issue tracker.
 
 ## Credits
 

@@ -41,8 +41,7 @@
     "require": {
         "php": "^8.2",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.9|^12.0",
-        "livewire/livewire": "^3.6.4"
+        "illuminate/contracts": "^11.9|^12.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

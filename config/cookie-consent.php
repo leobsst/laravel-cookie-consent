@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'CONSENT_BANNER_VIEW' => env('COOKIE_CONSENT_BANNER_VIEW', 'cookie-consent::livewire.cookie-consent'),
+    'CONSENT_BANNER_VIEW' => env('COOKIE_CONSENT_BANNER_VIEW', 'cookie-consent::components.cookie-banner'),
 
     /*
     |--------------------------------------------------------------------------

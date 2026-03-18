@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
 use Leobsst\LaravelCookieConsent\LaravelCookieConsentServiceProvider;
-use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -38,7 +39,6 @@ class TestCase extends Orchestra
     {
         return [
             LaravelCookieConsentServiceProvider::class,
-            LivewireServiceProvider::class,
         ];
     }
 

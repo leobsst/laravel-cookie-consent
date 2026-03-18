@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Leobsst\LaravelCookieConsent;
 
 use Illuminate\Support\Facades\Blade;
+use Leobsst\LaravelCookieConsent\Components\CookieBanner;
 use Leobsst\LaravelCookieConsent\Components\Scripts;
 use Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent;
-use Leobsst\LaravelCookieConsent\Livewire\CookieConsent;
-use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -23,7 +24,7 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
                     ->publishAssets()
                     ->askToStarRepoOnGitHub('leobsst/laravel-cookie-consent');
             })
-            ->hasViewComponents('cookie-consent', Scripts::class)
+            ->hasViewComponents('cookie-consent', Scripts::class, CookieBanner::class)
             ->hasConfigFile()
             ->hasAssets()
             ->hasTranslations()
@@ -39,8 +40,9 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        $this->registerLivewireComponents();
         $this->registerMiddleware();
+
+        Blade::componentNamespace('Leobsst\\LaravelCookieConsent\\Components', 'cookie-consent');
     }
 
     /**
@@ -54,14 +56,6 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
                 'googleTagManagerId' => config('cookie-consent.GOOGLE_TAG_MANAGER_ID')
             ])->render(); ?>"
         );
-    }
-
-    /**
-     * Register Livewire components
-     */
-    private function registerLivewireComponents(): void
-    {
-        Livewire::component('laravel-cookie-consent::cookie-consent', CookieConsent::class);
     }
 
     /**

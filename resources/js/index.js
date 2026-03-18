@@ -1,35 +1,47 @@
-// Listen for cookie consent updates
-document.addEventListener('livewire:initialized', () => {
-    Livewire.on('cookie-consent-updated', (event) => {
-        const consent = event.consent;
-
-        // Check if gtag is available (it should be if user already had consent)
-        if (typeof gtag === 'function') {
-            if (consent === true) {
-                // User accepted - grant all consents
-                gtag('consent', 'update', {
-                    'functional_storage': 'granted',
-                    'security_storage': 'granted',
-                    'analytics_storage': 'granted',
-                    'ad_storage': 'granted',
-                    'ad_user_data': 'granted',
-                    'ad_personalization': 'granted'
-                });
-            } else if (consent === false) {
-                // User refused - deny all consents
-                gtag('consent', 'update', {
-                    'functional_storage': 'granted',
-                    'security_storage': 'granted',
-                    'analytics_storage': 'denied',
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied'
-                });
-            }
-        } else {
-            if (consent === true) {
-                window.location.reload();
-            }
+(function () {
+    function setCookieConsent(value) {
+        var cfg = window.CookieConsent;
+        var expires = new Date(Date.now() + cfg.duration * 1000).toUTCString();
+        var cookie = cfg.cookieName + '=' + value + '; expires=' + expires + '; path=/; SameSite=' + cfg.sameSite;
+        if (cfg.secure) {
+            cookie += '; Secure';
         }
-    });
-});
+        document.cookie = cookie;
+    }
+
+    function updateGtag(granted) {
+        if (typeof gtag === 'function') {
+            gtag('consent', 'update', {
+                'functional_storage': 'granted',
+                'security_storage': 'granted',
+                'analytics_storage': granted ? 'granted' : 'denied',
+                'ad_storage': granted ? 'granted' : 'denied',
+                'ad_user_data': granted ? 'granted' : 'denied',
+                'ad_personalization': granted ? 'granted' : 'denied',
+            });
+        } else if (granted) {
+            // gtag not yet loaded on first accept — reload to activate GTM with new consent
+            window.location.reload();
+        }
+    }
+
+    function hideBanner() {
+        var el = document.getElementById('cookie-consent-banner');
+        if (el) {
+            el.style.display = 'none';
+        }
+    }
+
+    window.__cookieConsent = {
+        accept: function () {
+            setCookieConsent('full');
+            updateGtag(true);
+            hideBanner();
+        },
+        refuse: function () {
+            setCookieConsent('none');
+            updateGtag(false);
+            hideBanner();
+        },
+    };
+})();

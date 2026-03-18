@@ -3,19 +3,17 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Blade;
+use Leobsst\LaravelCookieConsent\Components\CookieBanner;
+use Leobsst\LaravelCookieConsent\Components\Scripts;
 use Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent;
-use Leobsst\LaravelCookieConsent\Livewire\CookieConsent;
-use Livewire\Livewire;
 
-it('registers the Livewire component', function () {
-    // Test that the Livewire component can be instantiated
-    $component = app()->make(CookieConsent::class);
+it('can instantiate the CookieBanner component', function () {
+    $component = app()->make(CookieBanner::class);
 
-    expect($component)->toBeInstanceOf(CookieConsent::class);
+    expect($component)->toBeInstanceOf(CookieBanner::class);
 });
 
 it('can instantiate the HandleCookieConsent middleware', function () {
-    // Test that the middleware can be instantiated
     $middleware = app()->make(HandleCookieConsent::class);
 
     expect($middleware)->toBeInstanceOf(HandleCookieConsent::class);
@@ -56,25 +54,23 @@ it('has correct config structure', function () {
 
 it('has default config values', function () {
     expect(config('cookie-consent.LEARN_MORE_LINK'))->toBe('/privacy-policy');
-    expect(config('cookie-consent.CONSENT_BANNER_VIEW'))->toBe('cookie-consent::livewire.cookie-consent');
+    expect(config('cookie-consent.CONSENT_BANNER_VIEW'))->toBe('cookie-consent::components.cookie-banner');
     expect(config('cookie-consent.ACCENT_COLOR'))->toBe('#3490dc');
 });
 
 it('loads package views', function () {
-    expect(view()->exists('cookie-consent::livewire.cookie-consent'))->toBeTrue();
+    expect(view()->exists('cookie-consent::components.cookie-banner'))->toBeTrue();
     expect(view()->exists('cookie-consent::components.scripts'))->toBeTrue();
 });
 
 it('loads package translations', function () {
     app()->setLocale('en');
 
-    // Test that translation keys are available
     expect(__('Cookie Consent'))->toBeString();
 });
 
 it('registers Blade components', function () {
-    // Test that the component can be instantiated
-    $component = app()->make(\Leobsst\LaravelCookieConsent\Components\Scripts::class);
+    $component = app()->make(Scripts::class);
 
     expect($component)->toBeInstanceOf(\Leobsst\LaravelCookieConsent\Components\Scripts::class);
 });

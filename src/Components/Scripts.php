@@ -8,7 +8,7 @@ use Illuminate\View\Component;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
 
-class Scripts extends Component
+final class Scripts extends Component
 {
     public function __construct(
         private ?string $googleTagManagerId = null

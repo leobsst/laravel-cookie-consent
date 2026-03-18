@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HandleCookieConsent
+final class HandleCookieConsent
 {
     /**
      * Handle an incoming request.
@@ -20,7 +20,7 @@ class HandleCookieConsent
         // Check if user has given consent (either true or false)
         // null means no choice has been made yet
         // Share the consent status with all views
-        view()->share('cookieConsentStatus', $request->cookie('cookie_consent'));
+        view()->share('cookieConsentStatus', $_COOKIE['cookie_consent'] ?? null);
 
         return $next($request);
     }

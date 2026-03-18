@@ -1,4 +1,12 @@
 @if($loadScript)
+<script>
+    window.CookieConsent = {
+        cookieName: 'cookie_consent',
+        duration: {{ $cookieDuration }},
+        sameSite: @js($sameSite),
+        secure: {{ request()->isSecure() ? 'true' : 'false' }},
+    };
+</script>
 @push('scripts')
     <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
 @endpush
@@ -6,20 +14,17 @@
 
 <div>
     @if($loadScript)
-        @if(request()->cookie('cookie_consent') === null)
+        @if(($_COOKIE['cookie_consent'] ?? null) === null)
         <div
-            class="fixed left-0 bottom-0 p-4 z-30"
-            x-cloak
-            wire:ignore
-            x-data="{show: true}"
-            x-show="show">
+            id="cookie-consent-banner"
+            class="fixed left-0 bottom-0 p-4 z-30">
             <div class="bg-zinc-50 dark:bg-gray-900 max-w-[30rem] h-fit rounded-md shadow-2xl p-4">
                 <svg
                     class="w-16 h-16"
                     version="1.1"
                     id="Layer_1"
                     xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink" 
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
                     viewBox="0 0 512 512" xml:space="preserve">
                     <path style="fill:#FFE6A1;" d="M479.632,248.36l-24.341,4.868c-8.1,1.62-16.241-2.593-19.596-10.142l-26.073-58.666
                         c-2.207-4.967-6.579-8.639-11.851-9.958l-13.583-3.395c-7.86-1.965-13.373-9.026-13.373-17.128V59.803
@@ -152,7 +157,7 @@
                         <a href="{{ $learnMoreLink }}"
                             class="hover:opacity-75 duration-250 ease-in-out"
                             @style([
-                                ('color: ' . config('cookie-consent.ACCENT_COLOR')) => config('cookie-consent.ACCENT_COLOR'), 
+                                ('color: ' . $accentColor) => $accentColor,
                             ])>
                             {{ __('cookie-consent::translations.learn_more') }}
                         </a>
@@ -160,19 +165,17 @@
                         <div class="flex mt-4 md:mt-0 justify-end">
                             <button
                                 title="{{ __('cookie-consent::translations.accept') }}"
-                                x-on:click="show = false;"
-                                wire:click="updateConsent(true)"
+                                onclick="window.__cookieConsent.accept()"
                                 type="button"
                                 class="text-white px-3 py-2 rounded-md hover-opacity mr-4 whitespace-nowrap dark:bg-opacity-80"
                                 @style([
-                                    ('background-color: ' . config('cookie-consent.ACCENT_COLOR')) => config('cookie-consent.ACCENT_COLOR'),
+                                    ('background-color: ' . $accentColor) => $accentColor,
                                 ])>
                                 {{ __('cookie-consent::translations.accept') }}
                             </button>
                             <button
                                 title="{{ __('cookie-consent::translations.refuse') }}"
-                                x-on:click="show = false;"
-                                wire:click="updateConsent(false)"
+                                onclick="window.__cookieConsent.refuse()"
                                 type="button"
                                 class="hover-opacity text-gray-700 dark:text-white whitespace-nowrap">
                                 {{ __('cookie-consent::translations.refuse') }}
