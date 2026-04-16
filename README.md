@@ -2,10 +2,13 @@
 
 <p align="center">
   <a href="https://packagist.org/packages/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/packagist/v/leobsst/laravel-cookie-consent.svg?style=flat-square" alt="Version"></a>
+  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-V11.9%20|%20V12.x%20|%2013.x-FF2D20?logo=laravel" alt="Laravel"></a>
+  <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php" alt="PHP"></a>
+</p>
+
+<p align="center">
   <a href="https://packagist.org/packages/leobsst/laravel-cookie-consent"><img src="https://img.shields.io/packagist/dt/leobsst/laravel-cookie-consent.svg?style=flat-square" alt="Downloads"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
-  <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11.9+-FF2D20?logo=laravel" alt="Laravel"></a>
-  <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php" alt="PHP"></a>
 </p>
 
 <h1 style="text-align: center;">Laravel Cookie Consent</h1>
@@ -26,7 +29,7 @@ A lightweight Laravel package for handling cookie consent with Google Tag Manage
 ## Requirements
 
 - PHP 8.2 or higher
-- Laravel 11.9 or higher
+- Laravel 11.9 or 12.x or 13.x
 - Tailwind CSS
 
 ## Installation
