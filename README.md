@@ -30,7 +30,7 @@ A lightweight Laravel package for handling cookie consent with Google Tag Manage
 
 - PHP 8.2 or higher
 - Laravel 11.9 or 12.x or 13.x
-- Tailwind CSS
+- Tailwind CSS or higher
 
 ## Installation
 
