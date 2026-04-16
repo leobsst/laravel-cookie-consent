@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v2.0.2 - 2026-04-16
+
+### What's changed
+
+- Added Laravel 13 support in `composer.json` (`illuminate/contracts`: `^13.0`)
+- Added `orchestra/testbench` `^11.0` support
+- Added `pestphp/pest`, `pestphp/pest-plugin-arch` and `pestphp/pest-plugin-laravel` `^4.0` support
+- Updated CI matrix in `run-tests.yml` to test against Laravel 13 with PHP 8.3 and 8.4
+- Excluded PHP 8.2 from Laravel 13 test matrix (Laravel 13 requires PHP 8.3+)
+- Injected correct Pest version per Laravel version in CI (`^3.0` for L11/L12, `^4.0` for L13)
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.1...v2.0.2
+
 ## v2.0.1 - 2026-03-18
 
 ### Fixed
