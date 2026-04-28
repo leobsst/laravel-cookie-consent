@@ -6,6 +6,38 @@
         sameSite: @js($sameSite),
         secure: {{ request()->isSecure() ? 'true' : 'false' }},
     };
+
+    (function () {
+        function setCookieConsent(value) {
+            var cfg = window.CookieConsent;
+            var expires = new Date(Date.now() + cfg.duration * 1000).toUTCString();
+            var cookie = cfg.cookieName + '=' + value + '; expires=' + expires + '; path=/; SameSite=' + cfg.sameSite;
+            if (cfg.secure) {
+                cookie += '; Secure';
+            }
+            document.cookie = cookie;
+        }
+
+        function hideBanner() {
+            var el = document.getElementById('cookie-consent-banner');
+            if (el) {
+                el.style.display = 'none';
+            }
+        }
+
+        if (!window.__cookieConsent) {
+            window.__cookieConsent = {
+                accept: function () {
+                    setCookieConsent('full');
+                    hideBanner();
+                },
+                refuse: function () {
+                    setCookieConsent('none');
+                    hideBanner();
+                },
+            };
+        }
+    })();
 </script>
 @once
     <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
