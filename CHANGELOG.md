@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## v2.0.3 - 2026-04-28
+
+### What's changed
+
+**`resources/views/components/cookie-banner.blade.php`**
+
+Added a minimal inline script inside the existing config block. This script immediately defines `window.__cookieConsent` (with `accept()` and `refuse()` methods) using the server-injected `window.CookieConsent` config.
+
+The `if (!window.__cookieConsent)` guard ensures that if the vendor script loads normally, it takes over without conflict.
+
+
+---
+
+### Impact
+
+| Scenario | Before | After |
+|---|---|---|
+| Vendor script loads normally | ✅ Works | ✅ Works (unchanged behavior, gtag included) |
+| Vendor script blocked | ❌ `TypeError: Cannot read properties of undefined (reading 'accept')` — banner cannot be closed | ✅ Cookie written, banner hidden |
+
+The fallback intentionally does not call `gtag` / GTM — those scripts are also blocked in this scenario. On the next page load, the `cookie_consent` cookie is read server-side and the banner is no longer displayed.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.2...v2.0.3
+
 ## v2.0.2 - 2026-04-16
 
 ### What's changed
