@@ -18,7 +18,10 @@ final class Scripts extends Component
 
     public function render(): View
     {
-        return view('cookie-consent::components.scripts', [
+        /** @var view-string $view */
+        $view = 'cookie-consent::components.scripts';
+
+        return view($view, [
             'googleTagManagerId' => $this->googleTagManagerId,
             'posthogProjectToken' => $this->posthogProjectToken,
             'posthogHost' => $this->posthogHost,
