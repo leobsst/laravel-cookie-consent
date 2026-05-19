@@ -20,9 +20,20 @@ final class CookieBanner extends Component
 
     public string $sameSite;
 
+    public ?string $posthogProjectToken;
+
+    public ?string $posthogHost;
+
+    public ?string $posthogUiHost;
+
     public function __construct()
     {
-        $this->loadScript = config('cookie-consent.GOOGLE_TAG_MANAGER_ID') !== null;
+        $this->posthogProjectToken = config('cookie-consent.POSTHOG_PROJECT_TOKEN');
+        $this->posthogHost = config('cookie-consent.POSTHOG_HOST');
+        $this->posthogUiHost = config('cookie-consent.POSTHOG_UI_HOST');
+
+        $this->loadScript = config('cookie-consent.GOOGLE_TAG_MANAGER_ID') !== null
+            || $this->posthogProjectToken !== null;
 
         $this->learnMoreLink = null;
         if ($linkConfig = config('cookie-consent.LEARN_MORE_LINK')) {
@@ -47,6 +58,9 @@ final class CookieBanner extends Component
             'accentColor' => $this->accentColor,
             'cookieDuration' => $this->cookieDuration,
             'sameSite' => $this->sameSite,
+            'posthogProjectToken' => $this->posthogProjectToken,
+            'posthogHost' => $this->posthogHost,
+            'posthogUiHost' => $this->posthogUiHost,
         ]);
     }
 }

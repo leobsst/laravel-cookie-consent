@@ -58,3 +58,25 @@ it('renders view with correct data structure', function () {
     expect($data)->toBeArray();
     expect($data)->toHaveKey('googleTagManagerId');
 });
+
+it('passes posthog config to the view', function () {
+    $component = new Scripts(
+        posthogProjectToken: 'phc_test',
+        posthogHost: 'https://eu.i.posthog.com',
+        posthogUiHost: 'https://eu.posthog.com',
+    );
+    $data = $component->render()->getData();
+
+    expect($data['posthogProjectToken'])->toBe('phc_test');
+    expect($data['posthogHost'])->toBe('https://eu.i.posthog.com');
+    expect($data['posthogUiHost'])->toBe('https://eu.posthog.com');
+});
+
+it('passes null posthog values when not provided', function () {
+    $component = new Scripts;
+    $data = $component->render()->getData();
+
+    expect($data['posthogProjectToken'])->toBeNull();
+    expect($data['posthogHost'])->toBeNull();
+    expect($data['posthogUiHost'])->toBeNull();
+});

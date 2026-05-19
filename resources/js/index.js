@@ -25,6 +25,24 @@
         }
     }
 
+    function updatePosthog(granted) {
+        if (!window.__posthogConfig) {
+            return;
+        }
+        if (granted) {
+            if (window.posthog && typeof window.posthog.has_opted_out_capturing === 'function') {
+                window.posthog.opt_in_capturing();
+            } else {
+                // PostHog not yet loaded — reload so the server-side snippet initializes it
+                window.location.reload();
+            }
+        } else {
+            if (window.posthog && typeof window.posthog.opt_out_capturing === 'function') {
+                window.posthog.opt_out_capturing();
+            }
+        }
+    }
+
     function hideBanner() {
         var el = document.getElementById('cookie-consent-banner');
         if (el) {
@@ -36,11 +54,13 @@
         accept: function () {
             setCookieConsent('full');
             updateGtag(true);
+            updatePosthog(true);
             hideBanner();
         },
         refuse: function () {
             setCookieConsent('none');
             updateGtag(false);
+            updatePosthog(false);
             hideBanner();
         },
     };

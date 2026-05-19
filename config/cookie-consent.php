@@ -17,6 +17,46 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | PostHog Project Token
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify your PostHog project token to enable PostHog
+    | analytics. Analytics will only be initialized after the user accepts
+    | cookies. Leave null to disable PostHog integration.
+    |
+    */
+
+    'POSTHOG_PROJECT_TOKEN' => env('POSTHOG_PROJECT_TOKEN'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | PostHog Host
+    |--------------------------------------------------------------------------
+    |
+    | The PostHog instance host. Use 'https://eu.i.posthog.com' for EU Cloud,
+    | 'https://us.i.posthog.com' for US Cloud, or your self-hosted URL.
+    |
+    */
+
+    'POSTHOG_HOST' => env('POSTHOG_HOST', 'https://eu.i.posthog.com'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | PostHog UI Host
+    |--------------------------------------------------------------------------
+    |
+    | When POSTHOG_HOST points to a reverse proxy, set this to the actual
+    | PostHog UI host so the toolbar and session recordings link correctly.
+    | Defaults to the same value as POSTHOG_HOST when not set.
+    |
+    | Example: 'https://eu.posthog.com'
+    |
+    */
+
+    'POSTHOG_UI_HOST' => env('POSTHOG_UI_HOST'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Learn More Link
     |--------------------------------------------------------------------------
     |
