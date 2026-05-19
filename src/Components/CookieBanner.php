@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Leobsst\LaravelCookieConsent\Components;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Component;
-use Illuminate\View\View;
 
 final class CookieBanner extends Component
 {
@@ -49,10 +49,7 @@ final class CookieBanner extends Component
 
     public function render(): View
     {
-        /** @var view-string */
-        $view = config('cookie-consent.CONSENT_BANNER_VIEW', 'cookie-consent::components.cookie-banner');
-
-        return view($view, [
+        return view(config('cookie-consent.CONSENT_BANNER_VIEW', 'cookie-consent::components.cookie-banner'), [
             'loadScript' => $this->loadScript,
             'learnMoreLink' => $this->learnMoreLink,
             'accentColor' => $this->accentColor,
