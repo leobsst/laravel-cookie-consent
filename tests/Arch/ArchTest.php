@@ -26,6 +26,7 @@ arch('it ensures no extends are used except for base classes')
     ->classes()
     ->toExtend('Spatie\LaravelPackageTools\PackageServiceProvider')
     ->ignoring([
+        'Leobsst\LaravelCookieConsent\Commands\UpgradeCommand',
         'Leobsst\LaravelCookieConsent\Components\CookieBanner',
         'Leobsst\LaravelCookieConsent\Components\Scripts',
         'Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent',

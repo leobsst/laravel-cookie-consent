@@ -27,6 +27,48 @@ it('sets loadScript to false when Google Tag Manager ID is not configured', func
     expect($component->loadScript)->toBeFalse();
 });
 
+it('sets loadScript to true when PostHog token is configured', function () {
+    config(['cookie-consent.GOOGLE_TAG_MANAGER_ID' => null]);
+    config(['cookie-consent.POSTHOG_PROJECT_TOKEN' => 'phc_test']);
+
+    $component = new CookieBanner;
+
+    expect($component->loadScript)->toBeTrue();
+});
+
+it('sets loadScript to false when neither GTM nor PostHog is configured', function () {
+    config(['cookie-consent.GOOGLE_TAG_MANAGER_ID' => null]);
+    config(['cookie-consent.POSTHOG_PROJECT_TOKEN' => null]);
+
+    $component = new CookieBanner;
+
+    expect($component->loadScript)->toBeFalse();
+});
+
+it('passes posthog config from config file', function () {
+    config(['cookie-consent.POSTHOG_PROJECT_TOKEN' => 'phc_test']);
+    config(['cookie-consent.POSTHOG_HOST' => 'https://eu.i.posthog.com']);
+    config(['cookie-consent.POSTHOG_UI_HOST' => 'https://eu.posthog.com']);
+
+    $component = new CookieBanner;
+
+    expect($component->posthogProjectToken)->toBe('phc_test');
+    expect($component->posthogHost)->toBe('https://eu.i.posthog.com');
+    expect($component->posthogUiHost)->toBe('https://eu.posthog.com');
+});
+
+it('passes posthog values to the view', function () {
+    config(['cookie-consent.POSTHOG_PROJECT_TOKEN' => 'phc_test']);
+    config(['cookie-consent.POSTHOG_HOST' => 'https://eu.i.posthog.com']);
+    config(['cookie-consent.POSTHOG_UI_HOST' => null]);
+
+    $component = new CookieBanner;
+    $data = $component->render()->getData();
+
+    expect($data)->toHaveKeys(['posthogProjectToken', 'posthogHost', 'posthogUiHost']);
+    expect($data['posthogUiHost'])->toBeNull();
+});
+
 it('sets learn more link from config as string when route does not exist', function () {
     config(['cookie-consent.LEARN_MORE_LINK' => 'non.existent.route']);
 

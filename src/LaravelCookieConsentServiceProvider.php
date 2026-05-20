@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Leobsst\LaravelCookieConsent;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
+use Leobsst\LaravelCookieConsent\Commands\UpgradeCommand;
 use Leobsst\LaravelCookieConsent\Components\CookieBanner;
 use Leobsst\LaravelCookieConsent\Components\Scripts;
 use Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent;
@@ -28,7 +30,8 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasAssets()
             ->hasTranslations()
-            ->hasViews();
+            ->hasViews()
+            ->hasCommands(UpgradeCommand::class);
 
         $this->getBladeDirectives();
     }
@@ -53,7 +56,10 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
         Blade::directive(
             'cookieConsentScripts',
             fn () => "<?php echo view('cookie-consent::components.scripts', [
-                'googleTagManagerId' => config('cookie-consent.GOOGLE_TAG_MANAGER_ID')
+                'googleTagManagerId' => config('cookie-consent.GOOGLE_TAG_MANAGER_ID'),
+                'posthogProjectToken' => config('cookie-consent.POSTHOG_PROJECT_TOKEN'),
+                'posthogHost' => config('cookie-consent.POSTHOG_HOST'),
+                'posthogUiHost' => config('cookie-consent.POSTHOG_UI_HOST'),
             ])->render(); ?>"
         );
     }
@@ -63,9 +69,8 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
      */
     private function registerMiddleware(): void
     {
-        // Register the HandleCookieConsent middleware in the web middleware group
-        $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', HandleCookieConsent::class);
+        $this->app->make(Router::class)
+            ->pushMiddlewareToGroup('web', HandleCookieConsent::class);
     }
 
     /**

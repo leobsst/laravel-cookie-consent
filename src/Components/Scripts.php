@@ -4,22 +4,28 @@ declare(strict_types=1);
 
 namespace Leobsst\LaravelCookieConsent\Components;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use Illuminate\View\View;
 
 final class Scripts extends Component
 {
     public function __construct(
-        private ?string $googleTagManagerId = null
+        private ?string $googleTagManagerId = null,
+        private ?string $posthogProjectToken = null,
+        private ?string $posthogHost = null,
+        private ?string $posthogUiHost = null,
     ) {}
 
     public function render(): View
     {
-        /** @var view-string */
+        /** @var view-string $view */
         $view = 'cookie-consent::components.scripts';
 
         return view($view, [
             'googleTagManagerId' => $this->googleTagManagerId,
+            'posthogProjectToken' => $this->posthogProjectToken,
+            'posthogHost' => $this->posthogHost,
+            'posthogUiHost' => $this->posthogUiHost,
         ]);
     }
 }

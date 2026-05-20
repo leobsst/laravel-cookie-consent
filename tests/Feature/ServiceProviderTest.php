@@ -46,6 +46,9 @@ it('has correct config structure', function () {
 
     expect($config)->toHaveKeys([
         'GOOGLE_TAG_MANAGER_ID',
+        'POSTHOG_PROJECT_TOKEN',
+        'POSTHOG_HOST',
+        'POSTHOG_UI_HOST',
         'LEARN_MORE_LINK',
         'CONSENT_BANNER_VIEW',
         'ACCENT_COLOR',
@@ -56,6 +59,18 @@ it('has default config values', function () {
     expect(config('cookie-consent.LEARN_MORE_LINK'))->toBe('/privacy-policy');
     expect(config('cookie-consent.CONSENT_BANNER_VIEW'))->toBe('cookie-consent::components.cookie-banner');
     expect(config('cookie-consent.ACCENT_COLOR'))->toBe('#3490dc');
+    expect(config('cookie-consent.POSTHOG_PROJECT_TOKEN'))->toBeNull();
+    expect(config('cookie-consent.POSTHOG_HOST'))->toBe('https://eu.i.posthog.com');
+    expect(config('cookie-consent.POSTHOG_UI_HOST'))->toBeNull();
+});
+
+it('cookieConsentScripts directive includes posthog config', function () {
+    $directive = Blade::getCustomDirectives()['cookieConsentScripts'];
+    $output = $directive();
+
+    expect($output)->toContain("config('cookie-consent.POSTHOG_PROJECT_TOKEN')");
+    expect($output)->toContain("config('cookie-consent.POSTHOG_HOST')");
+    expect($output)->toContain("config('cookie-consent.POSTHOG_UI_HOST')");
 });
 
 it('loads package views', function () {
