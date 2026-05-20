@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v2.0.4 - 2026-05-20
+
+### Added
+
+- **PostHog integration.** Pass your `POSTHOG_PROJECT_TOKEN` (and optionally `POSTHOG_HOST`, `POSTHOG_UI_HOST`) in `.env` to enable PostHog analytics. The script is initialized on every page load and respects cookie persistence settings.
+- **`cookie-consent:upgrade` artisan command.** Detects missing config keys and appends them to your published `config/cookie-consent.php` without overwriting existing values. Run it after updating the package to pull in new options automatically.
+
+### Fixed
+
+- Added an inline `window.__cookieConsent` fallback so pages that block the tracking script via CSP or ad-blockers no longer throw a `__cookieConsent is undefined` runtime error.
+
+### Changed
+
+- PostHog is now initialized unconditionally (previously gated on `cookieConsentStatus === 'full'`), allowing it to load its stub and manage its own persistence.
+- `UpgradeCommand::stubs()` now parses the package config file dynamically — adding a new key to `config/cookie-consent.php` is sufficient, no code change required.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.3...v2.0.4
+
 ## v2.0.3 - 2026-04-28
 
 ### What's changed
