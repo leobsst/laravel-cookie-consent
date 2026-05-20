@@ -47,7 +47,7 @@ final class UpgradeCommand extends Command
 
         return array_values(array_filter(
             $packageKeys,
-            fn (string $key) => ! array_key_exists($key, $published)
+            fn (string $key) => ! \array_key_exists($key, $published)
         ));
     }
 
@@ -62,7 +62,7 @@ final class UpgradeCommand extends Command
         $additions = '';
         foreach ($keys as $key) {
             if (isset($stubs[$key])) {
-                $additions .= "\n" . $stubs[$key];
+                $additions .= "\n\n" . $stubs[$key];
             }
         }
 
@@ -73,56 +73,28 @@ final class UpgradeCommand extends Command
     }
 
     /**
-     * Stubs for each config key that can be added by this command.
+     * Extracts stubs directly from the package config file.
+     * Each block (comment + key-value line) is parsed dynamically, so adding
+     * a new key to config/cookie-consent.php is sufficient — no update needed here.
      *
      * @return array<string, string>
      */
     private function stubs(): array
     {
-        return [
-            'POSTHOG_PROJECT_TOKEN' => <<<'PHP'
-    /*
-    |--------------------------------------------------------------------------
-    | PostHog Project Token
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify your PostHog project token to enable PostHog
-    | analytics. Analytics will only be initialized after the user accepts
-    | cookies. Leave null to disable PostHog integration.
-    |
-    */
+        $source = file_get_contents(__DIR__ . '/../../config/cookie-consent.php');
+        $stubs = [];
 
-    'POSTHOG_PROJECT_TOKEN' => env('POSTHOG_PROJECT_TOKEN'),
-PHP,
-            'POSTHOG_HOST' => <<<'PHP'
-    /*
-    |--------------------------------------------------------------------------
-    | PostHog Host
-    |--------------------------------------------------------------------------
-    |
-    | The PostHog instance host. Use 'https://eu.i.posthog.com' for EU Cloud,
-    | 'https://us.i.posthog.com' for US Cloud, or your self-hosted URL.
-    |
-    */
+        preg_match_all(
+            '/( {4}\/\*.*?\*\/\n\n {4}\'([^\']+)\' => [^\n]+)/s',
+            $source,
+            $matches,
+            PREG_SET_ORDER
+        );
 
-    'POSTHOG_HOST' => env('POSTHOG_HOST', 'https://eu.i.posthog.com'),
-PHP,
-            'POSTHOG_UI_HOST' => <<<'PHP'
-    /*
-    |--------------------------------------------------------------------------
-    | PostHog UI Host
-    |--------------------------------------------------------------------------
-    |
-    | When POSTHOG_HOST points to a reverse proxy, set this to the actual
-    | PostHog UI host so the toolbar and session recordings link correctly.
-    | Defaults to the same value as POSTHOG_HOST when not set.
-    |
-    | Example: 'https://eu.posthog.com'
-    |
-    */
+        foreach ($matches as $match) {
+            $stubs[$match[2]] = $match[1];
+        }
 
-    'POSTHOG_UI_HOST' => env('POSTHOG_UI_HOST'),
-PHP,
-        ];
+        return $stubs;
     }
 }
