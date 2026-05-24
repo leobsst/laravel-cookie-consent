@@ -30,6 +30,8 @@ arch('it ensures no extends are used except for base classes')
         'Leobsst\LaravelCookieConsent\Components\CookieBanner',
         'Leobsst\LaravelCookieConsent\Components\Scripts',
         'Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent',
+        'Leobsst\LaravelCookieConsent\Http\Middleware\CheckGoogleAdsenseAvailability',
+        'Leobsst\LaravelCookieConsent\Http\Controllers\GetAdsBinaryFileController',
     ]);
 
 arch('Blade components extend Component')
