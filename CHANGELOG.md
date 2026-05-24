@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v2.0.6 - 2026-05-24
+
+### What's changed
+
+- **JS bundle now loads conditionally.** `cookie-consent.js` is only injected when at least one integration is configured (AdSense, GTM, or PostHog), reducing unnecessary asset loads on unconfigured installs.
+- **JS bundle load point moved to `<x-cookie-consent::scripts>`.** The `<script>` tag for `cookie-consent.js` is now emitted from the scripts component instead of the banner component, ensuring it is always loaded synchronously before any async ad scripts — even on pages where the banner has already been dismissed.
+- **IAB TCF 2.0 stub and PostHog init moved into the JS bundle.** Both were previously inlined in Blade templates. They now live in `cookie-consent.js` and are compiled into the distributed build. The Blade scripts component retains only PHP-rendered config values (`window.CookieConsent`, `window.__posthogConfig`).
+- **TCF stub notifies listeners on user action.** `window.__tcfapi._notify()` is now called when the user accepts or refuses consent, dispatching a `useractioncomplete` event to any registered TCF listeners (e.g. Google AdSense).
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.5...v2.0.6
+
 ## v2.0.5 - 2026-05-24
 
 ### Added
