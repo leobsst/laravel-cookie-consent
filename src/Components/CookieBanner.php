@@ -33,7 +33,8 @@ final class CookieBanner extends Component
         $this->posthogUiHost = config('cookie-consent.POSTHOG_UI_HOST');
 
         $this->loadScript = config('cookie-consent.GOOGLE_TAG_MANAGER_ID') !== null
-            || $this->posthogProjectToken !== null;
+            || $this->posthogProjectToken !== null
+            || config('cookie-consent.GOOGLE_ADSENSE_CLIENT_ID') !== null;
 
         $this->learnMoreLink = null;
         if ($linkConfig = config('cookie-consent.LEARN_MORE_LINK')) {

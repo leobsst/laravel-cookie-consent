@@ -31,6 +31,7 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
             ->hasAssets()
             ->hasTranslations()
             ->hasViews()
+            ->hasRoute('web')
             ->hasCommands(UpgradeCommand::class);
 
         $this->getBladeDirectives();
@@ -60,6 +61,7 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
                 'posthogProjectToken' => config('cookie-consent.POSTHOG_PROJECT_TOKEN'),
                 'posthogHost' => config('cookie-consent.POSTHOG_HOST'),
                 'posthogUiHost' => config('cookie-consent.POSTHOG_UI_HOST'),
+                'googleAdsenseClientId' => config('cookie-consent.GOOGLE_ADSENSE_CLIENT_ID'),
             ])->render(); ?>"
         );
     }
