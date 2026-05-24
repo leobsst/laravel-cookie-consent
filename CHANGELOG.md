@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v2.0.8 - 2026-05-24
+
+### Fixed
+
+- **TCF stub now correctly signals consent state to Google AdSense.** Two issues in the IAB TCF 2.0 stub were causing AdSense to never serve ads after consent was accepted — even after a page reload.
+  - `displayStatus` in the `ping` response is now dynamic: `'visible'` while no decision has been made yet (our banner is on screen), `'hidden'` once the user has accepted or refused. Previously it was always `'hidden'`, which led AdSense to assume the user had already dismissed the CMP with a denied state.
+  - `eventStatus` in the `addEventListener` initial callback is now `'useractioncomplete'` when the consent cookie already exists (e.g. on a page reload after acceptance), and `'tcloaded'` when no decision has been made yet. Previously it was always `'tcloaded'`, so AdSense never received the final-state signal it requires before serving ads.
+  
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.7...v2.0.8
+
 ## v2.0.7 - 2026-05-24
 
 ### What's changed
