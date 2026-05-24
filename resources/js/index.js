@@ -2,18 +2,21 @@
     // IAB TCF 2.0 stub — prevents Google AdSense from showing its own consent banner.
     // Must run before any async ad script; loaded via a synchronous <script> tag in scripts.blade.php.
     (function () {
-        var _listeners = [];
+        let _listeners = [];
 
-        function _readConsent() {
-            var name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
-            var escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            var match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
-            return match ? match[1] === 'full' : false;
+        function _cookieValue() {
+            let name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
+            let escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
+            return match ? match[1] : null;
         }
 
+        function _readConsent() { return _cookieValue() === 'full'; }
+        function _hasDecision() { return _cookieValue() !== null; }
+
         function _buildTCData(granted, eventStatus) {
-            var p = {};
-            for (var i = 1; i <= 10; i++) p[i] = granted;
+            let p = {};
+            for (let i = 1; i <= 10; i++) p[i] = granted;
             return {
                 tcString: '', tcfPolicyVersion: 4, cmpId: 1, cmpVersion: 1,
                 gdprApplies: true, isServiceSpecific: true,
@@ -26,18 +29,23 @@
         }
 
         window.__tcfapi = function (cmd, version, callback, param) {
-            var consent = _readConsent();
+            let consent = _readConsent();
+            let decided = _hasDecision();
             switch (cmd) {
                 case 'ping':
-                    callback({ gdprApplies: true, cmpLoaded: true, cmpStatus: 'loaded', displayStatus: 'hidden', apiVersion: '2.2', cmpId: 1, tcfPolicyVersion: 4 }, true);
+                    // 'visible' while our banner is shown (no decision yet) — tells AdSense a CMP is active so it won't show its own banner.
+                    // 'hidden' once the user has decided — tells AdSense consent was handled.
+                    callback({ gdprApplies: true, cmpLoaded: true, cmpStatus: 'loaded', displayStatus: decided ? 'hidden' : 'visible', apiVersion: '2.2', cmpId: 1, tcfPolicyVersion: 4 }, true);
                     break;
                 case 'getTCData':
-                    callback(_buildTCData(consent), true);
+                    callback(_buildTCData(consent, decided ? 'useractioncomplete' : 'tcloaded'), true);
                     break;
                 case 'addEventListener':
-                    var id = _listeners.length;
+                    let id = _listeners.length;
                     _listeners.push(callback);
-                    callback(Object.assign(_buildTCData(consent), { listenerId: id }), true);
+                    // 'useractioncomplete' when consent is already known (page reload after decision) — AdSense will serve ads immediately.
+                    // 'tcloaded' when no decision yet — AdSense waits for _notify().
+                    callback(Object.assign(_buildTCData(consent, decided ? 'useractioncomplete' : 'tcloaded'), { listenerId: id }), true);
                     break;
                 case 'removeEventListener':
                     if (param !== undefined && _listeners[param]) { _listeners[param] = null; callback(true, true); }
@@ -46,12 +54,12 @@
         };
 
         window.__tcfapi._notify = function (granted) {
-            var data = _buildTCData(granted, 'useractioncomplete');
+            let data = _buildTCData(granted, 'useractioncomplete');
             _listeners.forEach(function (cb, i) { if (cb) cb(Object.assign({}, data, { listenerId: i }), true); });
         };
 
         if (!window.frames['__tcfapiLocator']) {
-            var f = document.createElement('iframe');
+            let f = document.createElement('iframe');
             f.style.cssText = 'display:none';
             f.name = '__tcfapiLocator';
             (document.body || document.documentElement).appendChild(f);
@@ -59,9 +67,9 @@
     })();
 
     function setCookieConsent(value) {
-        var cfg = window.CookieConsent;
-        var expires = new Date(Date.now() + cfg.duration * 1000).toUTCString();
-        var cookie = cfg.cookieName + '=' + value + '; expires=' + expires + '; path=/; SameSite=' + cfg.sameSite;
+        let cfg = window.CookieConsent;
+        let expires = new Date(Date.now() + cfg.duration * 1000).toUTCString();
+        let cookie = cfg.cookieName + '=' + value + '; expires=' + expires + '; path=/; SameSite=' + cfg.sameSite;
         if (cfg.secure) {
             cookie += '; Secure';
         }
@@ -78,9 +86,6 @@
                 'ad_user_data': granted ? 'granted' : 'denied',
                 'ad_personalization': granted ? 'granted' : 'denied',
             });
-        } else if (granted) {
-            // gtag not yet loaded on first accept — reload to activate GTM with new consent
-            window.location.reload();
         }
         if (window.__tcfapi && window.__tcfapi._notify) {
             window.__tcfapi._notify(granted);
@@ -106,7 +111,7 @@
     }
 
     function hideBanner() {
-        var el = document.getElementById('cookie-consent-banner');
+        let el = document.getElementById('cookie-consent-banner');
         if (el) {
             el.style.display = 'none';
         }
