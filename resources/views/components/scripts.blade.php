@@ -1,13 +1,12 @@
 @if($googleAdsenseClientId)
         <meta name="google-adsense-account" content="ca-{{ $googleAdsenseClientId }}">
 @endif
-
 @if($googleAdsenseClientId || $googleTagManagerId || $posthogProjectToken)
-        @once
+@once
         <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
-        @endonce
+        <script>window.__cookieConsentStatus = @js($cookieConsentStatus === 'full' ? 'granted' : 'denied');</script>
+@endonce
 @endif
-
 @if($googleAdsenseClientId && !$googleTagManagerId)
         <!-- Google AdSense with Consent Mode v2 -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=ca-{{ $googleAdsenseClientId }}"></script>
@@ -15,41 +14,41 @@
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('consent', 'default', {
-                'ad_storage': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
-                'ad_user_data': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
-                'ad_personalization': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
+                'ad_storage': window.__cookieConsentStatus,
+                'ad_user_data': window.__cookieConsentStatus,
+                'ad_personalization': window.__cookieConsentStatus,
             });
             gtag('js', new Date());
             gtag('config', @js('ca-' . $googleAdsenseClientId));
         </script>
 @endif
-
 @if($googleTagManagerId)
         <!-- Google Tag Manager -->
         <script>
             window.dataLayer = window.dataLayer || [];
+            window.__googleTagManagerId = @js($googleTagManagerId);
             function gtag(){dataLayer.push(arguments);}
             gtag('consent', 'default', {
                 'functional_storage': 'granted',
                 'security_storage': 'granted',
-                'analytics_storage': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
-                'ad_storage': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
-                'ad_user_data': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied'),
-                'ad_personalization': @js($cookieConsentStatus === 'full' ? 'granted' : 'denied')
+                'analytics_storage': window.__cookieConsentStatus,
+                'ad_storage': window.__cookieConsentStatus,
+                'ad_user_data': window.__cookieConsentStatus,
+                'ad_personalization': window.__cookieConsentStatus
             });
         </script>
-        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer',@js($googleTagManagerId));
+        <script>
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer',window.__googleTagManagerId);
         </script>
         <script>
             gtag('js', new Date());
-            gtag('config', @js($googleTagManagerId));
+            gtag('config', window.__googleTagManagerId);
         </script>
 @endif
-
 @if($posthogProjectToken)
         <!-- PostHog config — init is handled by cookie-consent.js -->
         <script>
