@@ -39,9 +39,6 @@
         }
     })();
 </script>
-@once
-    <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
-@endonce
 @endif
 
 <div>
