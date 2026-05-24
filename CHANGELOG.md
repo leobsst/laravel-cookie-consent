@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.0.7 - 2026-05-24
+
+### What's changed
+
+- **PostHog initialization moved from JS bundle to inline Blade script.** The PostHog stub and `posthog.init()` call are now rendered directly inside `<x-cookie-consent::scripts>` by PHP, only when `POSTHOG_PROJECT_TOKEN` is configured. This removes PostHog code from the compiled `cookie-consent.js` bundle entirely, reducing bundle size for installs that don't use PostHog.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.6...v2.0.7
+
 ## v2.0.6 - 2026-05-24
 
 ### What's changed
