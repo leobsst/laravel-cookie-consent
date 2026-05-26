@@ -193,22 +193,28 @@ function updateGtag(granted) {
 function refreshAdSenseSlots() {
     let slots = document.querySelectorAll('ins.adsbygoogle');
     if (!slots.length) return;
-    slots.forEach(function (ins) {
-        // Reset the slot so AdSense treats it as unpushed
-        ins.removeAttribute('data-adsbygoogle-status');
-        ins.removeAttribute('data-ad-status');
-        ins.innerHTML = '';
-    });
-    if (window.adsbygoogle) {
+    // Make slots visible first so AdSense can measure availableWidth before push.
+    setAdSenseSlotsVisibility(true);
+    requestAnimationFrame(function () {
+        slots.forEach(function (ins) {
+            ins.removeAttribute('data-adsbygoogle-status');
+            ins.removeAttribute('data-ad-status');
+            ins.innerHTML = '';
+        });
         slots.forEach(function () {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
         });
-    }
+    });
 }
 
 function setAdSenseSlotsVisibility(visible) {
+    if (visible) {
+        let style = document.getElementById('adsense-consent-hide');
+        if (style) style.remove();
+    }
     document.querySelectorAll('ins.adsbygoogle').forEach(function (ins) {
-        ins.closest('.adsense-wrapper') ? (ins.closest('.adsense-wrapper').style.display = visible ? '' : 'none') : (ins.style.display = visible ? '' : 'none');
+        let target = ins.closest('.adsense-wrapper') || ins;
+        target.style.display = visible ? '' : 'none';
     });
 }
 
@@ -251,17 +257,18 @@ window.__cookieConsent = {
     },
 };
 
-// On page load: hide ad slots if no consent decision has been made or consent was refused.
+// On page load: inject a stylesheet synchronously to hide ad slots before AdSense pushes them,
+// if consent has not been granted. This runs before DOMContentLoaded so AdSense never
+// measures availableWidth=0 on a slot that was shown then hidden too late.
 (function () {
-    let cookie = (function () {
-        let name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
-        let escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        let match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
-        return match ? match[1] : null;
-    }());
-    if (cookie !== 'full') {
-        document.addEventListener('DOMContentLoaded', function () {
-            setAdSenseSlotsVisibility(false);
-        });
+    let name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
+    let escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    let match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
+    let granted = match && match[1] === 'full';
+    if (!granted) {
+        let style = document.createElement('style');
+        style.id = 'adsense-consent-hide';
+        style.textContent = 'ins.adsbygoogle { display: none !important; }';
+        (document.head || document.documentElement).appendChild(style);
     }
 }());
