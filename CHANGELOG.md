@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## v2.0.23 - 2026-05-26
+
+### What's changed
+
+#### New features
+
+- `window.CookieConsent` now exposes `hasAdSense`, `hasGtm`, and `hasPosthog` boolean flags. `cookie-consent.js` uses these to activate only the relevant features per page. On accept, `window.location.reload()` is triggered only when `hasAdSense` is `true`, avoiding unnecessary reloads on GTM-only or PostHog-only setups.
+
+#### Refactoring
+
+- Replaced hardcoded TC strings in the IAB TCF 2.2 stub with spec-compliant strings generated at build time using `@iabtcf/core` with an inline minimal GVL — no network fetch required. `CMP_ID` updated to `28`, `tcfPolicyVersion` bumped to `4`.
+- `updateGtag()` now guards on `hasGtm` or `hasAdSense`. `updatePosthog()` short-circuits when `hasPosthog` is `false`. The TCF stub is always installed so AdSense can find `window.__tcfapi` regardless of flag state.
+
+#### Fixes
+
+- Fixed Google Funding Choices loading its own consent banner alongside the custom one. `window.__tcfapi` is now always present with `displayStatus: 'hidden'`, signalling that a CMP is already active.
+- Fixed feature flags being read before `window.CookieConsent` was defined. Flags are now set in `cookie-banner.blade.php` (rendered at `BODY_START`) and read lazily at call time rather than at script parse time.
+- Fixed a crash (`TypeError: Cannot read properties of undefined (reading 'add')`) caused by vendor `755` (Google Advertising Products) declaring `specialPurposes: [1,2]` and `features: [1,2]` while those entries were absent from the top-level `GVL_DATA` maps, preventing TC strings from being generated.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.22...v2.0.23
+
 ## v2.0.22 - 2026-05-26
 
 ### What's changed
