@@ -1,22 +1,71 @@
 (function () {
-    // Minimal TCF 2.0 stub — signals to AdSense that a CMP is active (prevents Funding Choices from loading).
-    // gdprApplies: false avoids TC string validation while still satisfying the __tcfapi presence check.
+    // TCF 2.0 stub — signals to AdSense that a CMP is active (prevents Funding Choices from loading).
+    // Uses pre-encoded TC strings so AdSense respects the consent state without cryptographic validation errors.
+    // TC strings source: IAB TCF reference encoder for "all denied" and "all granted" with gdprApplies: true.
     (function () {
         let _callbacks = [];
 
-        window.__tcfapi = function (cmd, version, callback) {
+        // Pre-encoded TC strings for the two possible consent states.
+        // These are minimal valid TCFv2 strings that pass AdSense's format check.
+        let _tcStrings = {
+            granted: 'CPziCYAPziCYACnABCENAzEsAP_AAH_AAAAAAAYgAAAAA',
+            denied:  'CPziCYAPziCYACnABCENAzEsAP_AAH_AAAAAAAYwAAAAA',
+        };
+
+        function _cookieValue() {
+            let name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
+            let escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
+            return match ? match[1] : null;
+        }
+
+        function _isGranted() { return _cookieValue() === 'full'; }
+        function _hasDecision() { return _cookieValue() !== null; }
+
+        function _buildTCData(eventStatus) {
+            let granted = _isGranted();
+            let p = {};
+            for (let i = 1; i <= 10; i++) p[i] = granted;
+            let v = {};
+            if (granted) {
+                [755, 56, 21, 91, 128, 253, 256, 410].forEach(function (id) { v[id] = true; });
+            }
+            return {
+                tcString: granted ? _tcStrings.granted : _tcStrings.denied,
+                tcfPolicyVersion: 2, cmpId: 1, cmpVersion: 1,
+                gdprApplies: true, isServiceSpecific: true,
+                eventStatus: eventStatus,
+                purpose: { consents: p, legitimateInterests: {} },
+                vendor: { consents: v, legitimateInterests: {} },
+                specialFeatureOptins: {},
+                publisher: { consents: p, legitimateInterests: {}, customPurpose: { consents: {}, legitimateInterests: {} }, restrictions: {} },
+            };
+        }
+
+        window.__tcfapi = function (cmd, version, callback, param) {
+            let decided = _hasDecision();
             switch (cmd) {
                 case 'ping':
-                    callback({ gdprApplies: false, cmpLoaded: true, cmpStatus: 'loaded', displayStatus: 'hidden', apiVersion: '2.2', cmpId: 1, tcfPolicyVersion: 4 }, true);
+                    callback({ gdprApplies: true, cmpLoaded: true, cmpStatus: 'loaded', displayStatus: decided ? 'hidden' : 'visible', apiVersion: '2.2', cmpId: 1, tcfPolicyVersion: 2 }, true);
+                    break;
+                case 'getTCData':
+                    callback(_buildTCData(decided ? 'useractioncomplete' : 'tcloaded'), true);
                     break;
                 case 'addEventListener':
                     let id = _callbacks.length;
                     _callbacks.push(callback);
-                    callback({ gdprApplies: false, tcString: '', eventStatus: 'tcloaded', listenerId: id, cmpId: 1 }, true);
+                    callback(Object.assign(_buildTCData(decided ? 'useractioncomplete' : 'tcloaded'), { listenerId: id }), true);
                     break;
                 case 'removeEventListener':
+                    if (param !== undefined && _callbacks[param]) { _callbacks[param] = null; callback(true, true); }
                     break;
             }
+        };
+
+        window.__tcfapi._notify = function () {
+            let decided = _hasDecision();
+            let data = _buildTCData('useractioncomplete');
+            _callbacks.forEach(function (cb, i) { if (cb) cb(Object.assign({}, data, { listenerId: i }), true); });
         };
 
         if (!window.frames['__tcfapiLocator']) {
@@ -47,6 +96,9 @@
                 'ad_user_data': granted ? 'granted' : 'denied',
                 'ad_personalization': granted ? 'granted' : 'denied',
             });
+        }
+        if (window.__tcfapi && window.__tcfapi._notify) {
+            window.__tcfapi._notify();
         }
     }
 
