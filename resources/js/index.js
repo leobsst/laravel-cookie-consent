@@ -1,6 +1,6 @@
 import { TCModel, TCString, GVL } from '@iabtcf/core';
 
-function HAS_ADSENSE() { return !!(window.CookieConsent && window.CookieConsent.hasAdSense); }
+function HAS_ADSENSE() { return !!(window.CookieConsent && window.CookieConsent.hasAdSense) && !!document.querySelector('ins.adsbygoogle'); }
 function HAS_GTM() { return !!(window.CookieConsent && window.CookieConsent.hasGtm); }
 function HAS_POSTHOG() { return !!(window.CookieConsent && window.CookieConsent.hasPosthog); }
 
