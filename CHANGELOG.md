@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v2.0.22 - 2026-05-26
+
+### What's changed
+
+#### New features
+
+- `window.CookieConsent` now exposes `hasAdSense`, `hasGtm`, and `hasPosthog` boolean flags, set by the Blade components (`cookie-banner.blade.php`, `scripts.blade.php`) so `cookie-consent.js` can conditionally activate only the features relevant to the current page setup.
+
+#### Refactoring
+
+- The TCF stub, `gtag`, and PostHog integration are now gated behind the `hasAdSense`, `hasGtm`, and `hasPosthog` feature flags, ensuring these scripts are only initialized when the corresponding service is actually present on the page.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.21...v2.0.22
+
 ## v2.0.21 - 2026-05-26
 
 ### What's changed
