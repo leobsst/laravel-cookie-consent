@@ -18,7 +18,7 @@
 
 - Removed the IAB TCF 2.0 stub (`window.__tcfapi`) from `cookie-consent.js` — it was causing Google AdSense to withhold ads even after user consent, because the stub returned an empty `tcString` which AdSense validates cryptographically in production. The existing `google-adsense-account` meta tag combined with Consent Mode v2 (`gtag('consent', 'update', {...})`) is sufficient to suppress Google's own consent banner and correctly signal consent state.
 
-**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.10...v2.0.11
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.11...v2.0.12
 
 ## v2.0.10 - 2026-05-26
 
