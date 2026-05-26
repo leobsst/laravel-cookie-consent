@@ -5,6 +5,7 @@
         duration: {{ $cookieDuration }},
         sameSite: @js($sameSite),
         secure: {{ request()->isSecure() ? 'true' : 'false' }},
+        hasPosthog: {{ $posthogProjectToken ? 'true' : 'false' }},
     };
 
     (function () {
