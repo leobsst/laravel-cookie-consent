@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v2.0.16 - 2026-05-26
+
+## What's changed
+
+### Refactoring
+
+- Replaced hardcoded TC strings in the IAB TCF 2.2 stub with spec-compliant strings generated at build time using `@iabtcf/core`. An inline minimal GVL is bundled directly in `cookie-consent.js` — no network fetch required. `CMP_ID` updated to `28` (registered IAB CMP), `tcfPolicyVersion` bumped to `4`.
+
+### Fixes
+
+- Fixed a crash (`TypeError: Cannot read properties of undefined (reading 'add')`) at page load caused by vendor 755 (Google Advertising Products) declaring `specialPurposes: [1,2]` and `features: [1,2]` while those entries were absent from the top-level GVL maps. TC strings were never generated, leaving AdSense without valid consent data. The inline `GVL_DATA` now includes the required `specialPurposes` and `features` definitions.
+- Set `displayStatus` to `'hidden'` unconditionally in `ping`, `getTCData`, and `addEventListener` responses to prevent Google Funding Choices from loading its own consent banner alongside the custom one.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.15...v2.0.16
+
 ## v2.0.15 - 2026-05-26
 
 ## What's changed
