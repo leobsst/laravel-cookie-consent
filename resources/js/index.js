@@ -8,8 +8,8 @@
         // Pre-encoded TC strings for the two possible consent states.
         // These are minimal valid TCFv2 strings that pass AdSense's format check.
         let _tcStrings = {
-            granted: 'CPziCYAPziCYACnABCENAzEsAP_AAH_AAAAAAAYgAAAAA',
-            denied:  'CPziCYAPziCYACnABCENAzEsAP_AAH_AAAAAAAYwAAAAA',
+            granted: 'CAKIf6AAKIf6AABABAFRABEgAP___wAAAAqIAAAAAAAA',
+            denied:  'CAKIf6AAKIf6AABABAFRABEgAAAAAAAAAAqIAAAAAAAA',
         };
 
         function _cookieValue() {
