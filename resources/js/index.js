@@ -240,7 +240,9 @@ window.__cookieConsent = {
         updateGtag(true);
         updatePosthog(true);
         hideBanner();
-        flushAdSenseQueue();
+        // Delay flush so TCF _notify() has time to update AdSense's internal
+        // consent state (FJPve flag) before we push the slots.
+        setTimeout(flushAdSenseQueue, 300);
     },
     refuse: function () {
         setCookieConsent('none');
