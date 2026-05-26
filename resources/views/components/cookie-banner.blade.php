@@ -5,6 +5,8 @@
         duration: {{ $cookieDuration }},
         sameSite: @js($sameSite),
         secure: {{ request()->isSecure() ? 'true' : 'false' }},
+        hasAdSense: {{ $hasAdSense ? 'true' : 'false' }},
+        hasGtm: {{ $hasGtm ? 'true' : 'false' }},
         hasPosthog: {{ $posthogProjectToken ? 'true' : 'false' }},
     };
 

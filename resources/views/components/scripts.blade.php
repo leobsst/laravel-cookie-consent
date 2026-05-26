@@ -4,13 +4,7 @@
 @if($googleAdsenseClientId || $googleTagManagerId || $posthogProjectToken)
 @once
         <script src="{{ asset('vendor/cookie-consent/cookie-consent.js') }}"></script>
-        <script>
-            window.__cookieConsentStatus = @js($cookieConsentStatus === 'full' ? 'granted' : 'denied');
-            window.CookieConsent = window.CookieConsent || {};
-            window.CookieConsent.hasGtm = {{ $googleTagManagerId ? 'true' : 'false' }};
-            window.CookieConsent.hasAdSense = {{ $googleAdsenseClientId ? 'true' : 'false' }};
-            window.CookieConsent.hasPosthog = {{ $posthogProjectToken ? 'true' : 'false' }};
-        </script>
+        <script>window.__cookieConsentStatus = @js($cookieConsentStatus === 'full' ? 'granted' : 'denied');</script>
 @endonce
 @endif
 @if($googleAdsenseClientId && !$googleTagManagerId)
