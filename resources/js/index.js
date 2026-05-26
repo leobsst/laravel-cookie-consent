@@ -190,31 +190,19 @@ function updateGtag(granted) {
     }
 }
 
-function refreshAdSenseSlots() {
+function flushAdSenseQueue() {
     let slots = document.querySelectorAll('ins.adsbygoogle');
     if (!slots.length) return;
-    // Make slots visible first so AdSense can measure availableWidth before push.
-    setAdSenseSlotsVisibility(true);
     requestAnimationFrame(function () {
         slots.forEach(function (ins) {
             ins.removeAttribute('data-adsbygoogle-status');
             ins.removeAttribute('data-ad-status');
+            ins.style.display = '';
             ins.innerHTML = '';
         });
         slots.forEach(function () {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
+            window._adsenseRealPush.call(window.adsbygoogle, {});
         });
-    });
-}
-
-function setAdSenseSlotsVisibility(visible) {
-    if (visible) {
-        let style = document.getElementById('adsense-consent-hide');
-        if (style) style.remove();
-    }
-    document.querySelectorAll('ins.adsbygoogle').forEach(function (ins) {
-        let target = ins.closest('.adsense-wrapper') || ins;
-        target.style.display = visible ? '' : 'none';
     });
 }
 
@@ -245,30 +233,30 @@ window.__cookieConsent = {
         updateGtag(true);
         updatePosthog(true);
         hideBanner();
-        setAdSenseSlotsVisibility(true);
-        refreshAdSenseSlots();
+        flushAdSenseQueue();
     },
     refuse: function () {
         setCookieConsent('none');
         updateGtag(false);
         updatePosthog(false);
         hideBanner();
-        setAdSenseSlotsVisibility(false);
     },
 };
 
-// On page load: inject a stylesheet synchronously to hide ad slots before AdSense pushes them,
-// if consent has not been granted. This runs before DOMContentLoaded so AdSense never
-// measures availableWidth=0 on a slot that was shown then hidden too late.
+// Intercept adsbygoogle.push() before AdSense script loads.
+// When consent has not been granted, pushes are silently dropped.
+// The real push is stored as _adsenseRealPush and called by flushAdSenseQueue() on accept.
 (function () {
     let name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
     let escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     let match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
     let granted = match && match[1] === 'full';
-    if (!granted) {
-        let style = document.createElement('style');
-        style.id = 'adsense-consent-hide';
-        style.textContent = 'ins.adsbygoogle { display: none !important; }';
-        (document.head || document.documentElement).appendChild(style);
-    }
+    if (granted) return;
+
+    // Set up the array before AdSense script runs so it sees our proxy.
+    window.adsbygoogle = window.adsbygoogle || [];
+    window._adsenseRealPush = Array.prototype.push;
+    window.adsbygoogle.push = function () {
+        // Drop the push — flushAdSenseQueue() will re-push on consent.
+    };
 }());
