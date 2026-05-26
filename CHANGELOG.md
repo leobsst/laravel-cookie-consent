@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v2.0.13 - 2026-05-26
+
+### What's changed
+
+#### Fixes
+
+- Fixed Google AdSense ads not displaying after user consent when using a custom cookie consent banner. The root cause was the IAB TCF 2.0 stub in `cookie-consent.js`: an empty `tcString` caused AdSense to treat consent as cryptographically invalid, while `gdprApplies: false` caused AdSense to bypass Consent Mode entirely and serve ads unconditionally. The stub now uses pre-encoded TCFv2 strings for both granted and denied states (`gdprApplies: true`), so AdSense correctly withholds ads until the user accepts and serves them once consent is granted.
+- `window.__tcfapi._notify()` is now called on `accept()` and `refuse()` to propagate consent state changes to active TCF listeners (including AdSense) in real time without requiring a page reload.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.12...v2.0.13
+
 ## v2.0.12 - 2026-05-26
 
 ### What's changed
