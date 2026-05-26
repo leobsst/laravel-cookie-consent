@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.0.10 - 2026-05-26
+
+### What's changed
+
+#### Fixes
+
+- **AdSense ads no longer served after consent due to empty `vendor.consents` in TCF stub.** Google AdSense (IAB vendor ID `755`) checks its own entry in `vendor.consents` before serving ads. The stub was always returning `vendor: { consents: {} }`, causing AdSense to withhold ads even when all purposes were granted — including after a full page reload with a valid consent cookie. The stub now populates `vendor.consents` with the relevant ad vendor IDs (`755`, `56`, `21`, `91`, `128`, `253`, `256`, `410`) when consent is granted.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.9...v2.0.10
+
 ## v2.0.9 - 2026-05-26
 
 ### What's changed
