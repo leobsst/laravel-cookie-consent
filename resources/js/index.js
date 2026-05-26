@@ -1,14 +1,14 @@
 import { TCModel, TCString, GVL } from '@iabtcf/core';
 
-const cfg = window.CookieConsent || {};
-const HAS_ADSENSE = !!cfg.hasAdSense;
-const HAS_GTM = !!cfg.hasGtm;
-const HAS_POSTHOG = !!cfg.hasPosthog;
+function HAS_ADSENSE() { return !!(window.CookieConsent && window.CookieConsent.hasAdSense); }
+function HAS_GTM() { return !!(window.CookieConsent && window.CookieConsent.hasGtm); }
+function HAS_POSTHOG() { return !!(window.CookieConsent && window.CookieConsent.hasPosthog); }
 
 // ---------------------------------------------------------------------------
-// TCF 2.2 stub — only needed when AdSense is present.
+// TCF 2.2 stub — installed unconditionally so AdSense can read it early.
+// The stub is lightweight; it only generates TC strings when AdSense is present.
 // ---------------------------------------------------------------------------
-if (HAS_ADSENSE) {
+(function () {
     const GVL_DATA = {
         gvlSpecificationVersion: 3,
         vendorListVersion: 1,
@@ -163,7 +163,7 @@ if (HAS_ADSENSE) {
             (document.body || document.documentElement).appendChild(f);
         }
     })();
-}
+}());
 
 // ---------------------------------------------------------------------------
 // Cookie helpers
@@ -218,7 +218,7 @@ window.__cookieConsent = {
         updateGtag(true);
         updatePosthog(true);
         hideBanner();
-        if (HAS_ADSENSE) {
+        if (HAS_ADSENSE()) {
             window.location.reload();
         }
     },
