@@ -97,15 +97,6 @@
         if (window.__tcfapi && window.__tcfapi._notify) {
             window.__tcfapi._notify(granted);
         }
-        if (granted) {
-            // AdSense slots that were pushed before consent was given are held by the CMP wait.
-            // After consent, re-push any slot that AdSense has not yet filled.
-            let slots = document.querySelectorAll('ins.adsbygoogle:not([data-ad-status])');
-            if (slots.length > 0) {
-                window.adsbygoogle = window.adsbygoogle || [];
-                slots.forEach(function () { window.adsbygoogle.push({}); });
-            }
-        }
     }
 
     function updatePosthog(granted) {
