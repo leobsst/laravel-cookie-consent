@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v2.0.9 - 2026-05-26
+
+### What's changed
+
+#### Fixes
+
+- **TCF stub `vendor.consents` was always empty, blocking AdSense from serving ads.** Google AdSense (IAB vendor ID `755`) checks its own vendor ID in the `vendor.consents` map before serving ads. The stub was returning `vendor: { consents: {} }`, causing AdSense to withhold ads even when all purposes were granted and even after a page reload with a valid consent cookie. The stub now populates `vendor.consents` with the relevant ad vendor IDs (`755`, `56`, `21`, `91`, `128`, `253`, `256`, `410`) when consent is granted.
+  
+- **AdSense slots not re-filled after consent is given without a page reload.** `<ins class="adsbygoogle">` slots that were pushed before consent was given are held in a CMP-wait state by AdSense. After the user accepts, the consent signal was sent but AdSense never retried the held slots. After `_notify('useractioncomplete')`, the consent handler now re-pushes all `ins.adsbygoogle` elements that have not yet received a `data-ad-status` attribute.
+  
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.8...v2.0.9
+
 ## v2.0.8 - 2026-05-24
 
 ### Fixed
