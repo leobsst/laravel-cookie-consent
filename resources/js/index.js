@@ -193,15 +193,22 @@ function updateGtag(granted) {
 function flushAdSenseQueue() {
     let slots = document.querySelectorAll('ins.adsbygoogle');
     if (!slots.length) return;
+    slots.forEach(function (ins) {
+        ins.removeAttribute('data-adsbygoogle-status');
+        ins.removeAttribute('data-ad-status');
+        ins.style.display = '';
+        ins.innerHTML = '';
+    });
+    // Restore real push before flushing.
+    if (window._adsenseRealPush) {
+        window.adsbygoogle.push = window._adsenseRealPush;
+    }
+    // Double rAF ensures the browser has completed layout after display change.
     requestAnimationFrame(function () {
-        slots.forEach(function (ins) {
-            ins.removeAttribute('data-adsbygoogle-status');
-            ins.removeAttribute('data-ad-status');
-            ins.style.display = '';
-            ins.innerHTML = '';
-        });
-        slots.forEach(function () {
-            window._adsenseRealPush.call(window.adsbygoogle, {});
+        requestAnimationFrame(function () {
+            slots.forEach(function () {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            });
         });
     });
 }
