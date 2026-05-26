@@ -1,4 +1,32 @@
 (function () {
+    // Minimal TCF 2.0 stub — signals to AdSense that a CMP is active (prevents Funding Choices from loading).
+    // gdprApplies: false avoids TC string validation while still satisfying the __tcfapi presence check.
+    (function () {
+        let _callbacks = [];
+
+        window.__tcfapi = function (cmd, version, callback) {
+            switch (cmd) {
+                case 'ping':
+                    callback({ gdprApplies: false, cmpLoaded: true, cmpStatus: 'loaded', displayStatus: 'hidden', apiVersion: '2.2', cmpId: 1, tcfPolicyVersion: 4 }, true);
+                    break;
+                case 'addEventListener':
+                    let id = _callbacks.length;
+                    _callbacks.push(callback);
+                    callback({ gdprApplies: false, tcString: '', eventStatus: 'tcloaded', listenerId: id, cmpId: 1 }, true);
+                    break;
+                case 'removeEventListener':
+                    break;
+            }
+        };
+
+        if (!window.frames['__tcfapiLocator']) {
+            let f = document.createElement('iframe');
+            f.style.cssText = 'display:none';
+            f.name = '__tcfapiLocator';
+            (document.body || document.documentElement).appendChild(f);
+        }
+    })();
+
     function setCookieConsent(value) {
         let cfg = window.CookieConsent;
         let expires = new Date(Date.now() + cfg.duration * 1000).toUTCString();
