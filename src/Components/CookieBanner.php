@@ -26,15 +26,21 @@ final class CookieBanner extends Component
 
     public ?string $posthogUiHost;
 
+    public bool $hasAdSense;
+
+    public bool $hasGtm;
+
     public function __construct()
     {
         $this->posthogProjectToken = config('cookie-consent.POSTHOG_PROJECT_TOKEN');
         $this->posthogHost = config('cookie-consent.POSTHOG_HOST');
         $this->posthogUiHost = config('cookie-consent.POSTHOG_UI_HOST');
+        $this->hasAdSense = config('cookie-consent.GOOGLE_ADSENSE_CLIENT_ID') !== null;
+        $this->hasGtm = config('cookie-consent.GOOGLE_TAG_MANAGER_ID') !== null;
 
-        $this->loadScript = config('cookie-consent.GOOGLE_TAG_MANAGER_ID') !== null
+        $this->loadScript = $this->hasGtm
             || $this->posthogProjectToken !== null
-            || config('cookie-consent.GOOGLE_ADSENSE_CLIENT_ID') !== null;
+            || $this->hasAdSense;
 
         $this->learnMoreLink = null;
         if ($linkConfig = config('cookie-consent.LEARN_MORE_LINK')) {
@@ -59,6 +65,8 @@ final class CookieBanner extends Component
             'posthogProjectToken' => $this->posthogProjectToken,
             'posthogHost' => $this->posthogHost,
             'posthogUiHost' => $this->posthogUiHost,
+            'hasAdSense' => $this->hasAdSense,
+            'hasGtm' => $this->hasGtm,
         ]);
     }
 }
