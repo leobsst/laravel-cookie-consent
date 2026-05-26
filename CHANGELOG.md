@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## v2.0.19 - 2026-05-26
+
+## What's changed
+
+### New features
+
+- Ad slots (`ins.adsbygoogle`) are no longer shown until consent is granted. On accept, slots are revealed and re-pushed to `adsbygoogle` so ads load without requiring a manual page reload. On refuse, slots remain hidden.
+
+### Refactoring
+
+- Replaced hardcoded TC strings in the IAB TCF 2.2 stub with spec-compliant strings generated at build time using `@iabtcf/core`. An inline minimal GVL is bundled directly in `cookie-consent.js` — no network fetch required. `CMP_ID` updated to `28` (registered IAB CMP), `tcfPolicyVersion` bumped to `4`. `displayStatus` is now always `'hidden'` to prevent Google Funding Choices from loading its own consent banner alongside the custom one.
+
+### Fixes
+
+- Fixed repeated `TagError: adsbygoogle.push() error: No slot size for availableWidth=0`. When consent has not been granted, `window.adsbygoogle.push` is now replaced with a no-op proxy before the AdSense script initializes, silently dropping all `push()` calls. On accept, `flushAdSenseQueue()` resets each slot and calls the real `Array.prototype.push` inside a `requestAnimationFrame` so AdSense measures a valid `availableWidth` before initializing.
+- Fixed a crash (`TypeError: Cannot read properties of undefined (reading 'add')`) at page load caused by vendor `755` (Google Advertising Products) declaring `specialPurposes: [1,2]` and `features: [1,2]` while those entries were absent from the top-level `GVL_DATA` maps. TC strings were never generated, leaving AdSense without valid consent data.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.18...v2.0.19
+
 ## v2.0.18 - 2026-05-26
 
 ## What's changed
