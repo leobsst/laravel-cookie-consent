@@ -17,12 +17,19 @@
         function _buildTCData(granted, eventStatus) {
             let p = {};
             for (let i = 1; i <= 10; i++) p[i] = granted;
+            // Vendor consents: grant all known ad vendors when consent is given.
+            // AdSense/Google (755) checks its own vendor ID — an empty object causes it to withhold ads
+            // even when all purposes are granted.
+            let v = {};
+            if (granted) {
+                [755, 56, 21, 91, 128, 253, 256, 410].forEach(function (id) { v[id] = true; });
+            }
             return {
                 tcString: '', tcfPolicyVersion: 4, cmpId: 1, cmpVersion: 1,
                 gdprApplies: true, isServiceSpecific: true,
                 eventStatus: eventStatus || 'tcloaded',
                 purpose: { consents: p, legitimateInterests: {} },
-                vendor: { consents: {}, legitimateInterests: {} },
+                vendor: { consents: v, legitimateInterests: {} },
                 specialFeatureOptins: {},
                 publisher: { consents: p, legitimateInterests: {}, customPurpose: { consents: {}, legitimateInterests: {} }, restrictions: {} },
             };
