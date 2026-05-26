@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.0.12 - 2026-05-26
+
+### What's changed
+
+#### Fixes
+
+- Replaced the full IAB TCF 2.0 stub with a minimal one that declares `gdprApplies: false` — the previous stub returned an empty `tcString` which AdSense validates cryptographically in production, causing it to withhold ads even after user consent. The minimal stub preserves `window.__tcfapi` and the `__tcfapiLocator` iframe (preventing Google Funding Choices from loading its own consent banner) without triggering TC string validation.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.10...v2.0.11
+
 ## v2.0.11 - 2026-05-26
 
 ### What's changed
