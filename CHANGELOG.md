@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2.0.24 - 2026-05-26
+
+### What's changed
+
+#### Fixes
+
+- `HAS_ADSENSE()` now additionally checks for the presence of an `ins.adsbygoogle` element in the DOM before returning `true`. This prevents `window.location.reload()` from firing on pages where AdSense is globally configured but no ad slots are actually rendered (e.g. admin pages, pages without ad widgets).
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.23...v2.0.24
+
 ## v2.0.23 - 2026-05-26
 
 ### What's changed
