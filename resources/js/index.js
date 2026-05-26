@@ -190,6 +190,28 @@ function updateGtag(granted) {
     }
 }
 
+function refreshAdSenseSlots() {
+    let slots = document.querySelectorAll('ins.adsbygoogle');
+    if (!slots.length) return;
+    slots.forEach(function (ins) {
+        // Reset the slot so AdSense treats it as unpushed
+        ins.removeAttribute('data-adsbygoogle-status');
+        ins.removeAttribute('data-ad-status');
+        ins.innerHTML = '';
+    });
+    if (window.adsbygoogle) {
+        slots.forEach(function () {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+        });
+    }
+}
+
+function setAdSenseSlotsVisibility(visible) {
+    document.querySelectorAll('ins.adsbygoogle').forEach(function (ins) {
+        ins.closest('.adsense-wrapper') ? (ins.closest('.adsense-wrapper').style.display = visible ? '' : 'none') : (ins.style.display = visible ? '' : 'none');
+    });
+}
+
 function updatePosthog(granted) {
     if (!window.__posthogConfig) return;
     if (granted) {
@@ -217,11 +239,29 @@ window.__cookieConsent = {
         updateGtag(true);
         updatePosthog(true);
         hideBanner();
+        setAdSenseSlotsVisibility(true);
+        refreshAdSenseSlots();
     },
     refuse: function () {
         setCookieConsent('none');
         updateGtag(false);
         updatePosthog(false);
         hideBanner();
+        setAdSenseSlotsVisibility(false);
     },
 };
+
+// On page load: hide ad slots if no consent decision has been made or consent was refused.
+(function () {
+    let cookie = (function () {
+        let name = (window.CookieConsent && window.CookieConsent.cookieName) || 'cookie_consent';
+        let escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        let match = document.cookie.match(new RegExp('(?:^|;)\\s*' + escaped + '=([^;]*)'));
+        return match ? match[1] : null;
+    }());
+    if (cookie !== 'full') {
+        document.addEventListener('DOMContentLoaded', function () {
+            setAdSenseSlotsVisibility(false);
+        });
+    }
+}());
