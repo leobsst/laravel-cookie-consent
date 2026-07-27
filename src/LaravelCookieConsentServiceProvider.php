@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Blade;
 use Leobsst\LaravelCookieConsent\Commands\UpgradeCommand;
 use Leobsst\LaravelCookieConsent\Components\CookieBanner;
 use Leobsst\LaravelCookieConsent\Components\Scripts;
+use Leobsst\LaravelCookieConsent\Http\Middleware\EnsureVisitorId;
 use Leobsst\LaravelCookieConsent\Http\Middleware\HandleCookieConsent;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -72,7 +73,8 @@ class LaravelCookieConsentServiceProvider extends PackageServiceProvider
     private function registerMiddleware(): void
     {
         $this->app->make(Router::class)
-            ->pushMiddlewareToGroup('web', HandleCookieConsent::class);
+            ->pushMiddlewareToGroup('web', HandleCookieConsent::class)
+            ->pushMiddlewareToGroup('web', EnsureVisitorId::class);
     }
 
     /**

@@ -57,6 +57,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | PostHog Visitor ID Cookie
+    |--------------------------------------------------------------------------
+    |
+    | Name of the first-party cookie used to persist a stable anonymous visitor
+    | id across requests. EnsureVisitorId middleware mints it server-side and
+    | shares its value to views as $posthogVisitorId, which the PostHog snippet
+    | passes as posthog-js's bootstrap.distinctID. This lets server-side (PHP
+    | SDK) and client-side (posthog-js) captures agree on the same anonymous
+    | distinct_id for a given visitor, instead of each generating their own.
+    |
+    */
+
+    'VISITOR_ID_COOKIE' => env('POSTHOG_VISITOR_ID_COOKIE', 'anonymous_visitor_id'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | PostHog Visitor ID Cookie Lifetime
+    |--------------------------------------------------------------------------
+    |
+    | How long (in days) the anonymous visitor id cookie should live. Keep this
+    | at least as long as posthog-js's own persistence cookie lifetime so both
+    | sides expire in sync.
+    |
+    */
+
+    'VISITOR_ID_COOKIE_LIFETIME_DAYS' => env('POSTHOG_VISITOR_ID_COOKIE_LIFETIME_DAYS', 400),
+
+    /*
+    |--------------------------------------------------------------------------
     | Learn More Link
     |--------------------------------------------------------------------------
     |
