@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v2.0.25 - 2026-07-27
+
+### Added
+
+- `EnsureVisitorId` middleware mints (or reads) a long-lived first-party anonymous visitor id cookie and shares it to all views as `$posthogVisitorId`, so server-side and client-side PostHog tracking can agree on the same anonymous identity for a given visitor.
+- New config keys: `VISITOR_ID_COOKIE` (default `anonymous_visitor_id`) and `VISITOR_ID_COOKIE_LIFETIME_DAYS` (default `400`). Run `php artisan cookie-consent:upgrade` after updating to add them to an already-published config file.
+- The PostHog snippet now initializes `posthog-js` with `bootstrap.distinctID` set to the shared visitor id, instead of letting `posthog-js` generate its own anonymous id independently of the backend.
+- The snippet emits `posthog.identify(id, properties)` when a consuming app shares `$posthogIdentifiedId`/`$posthogIdentifiedProperties` with the view (e.g. via a `View::composer`), keeping client-side identification in sync with server-side `identify()`/`alias()` calls.
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.24...v2.0.25
+
 ## v2.0.24 - 2026-05-26
 
 ### What's changed
