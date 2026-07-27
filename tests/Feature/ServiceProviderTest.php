@@ -49,10 +49,17 @@ it('has correct config structure', function () {
         'POSTHOG_PROJECT_TOKEN',
         'POSTHOG_HOST',
         'POSTHOG_UI_HOST',
+        'VISITOR_ID_COOKIE',
+        'VISITOR_ID_COOKIE_LIFETIME_DAYS',
         'LEARN_MORE_LINK',
         'CONSENT_BANNER_VIEW',
         'ACCENT_COLOR',
     ]);
+});
+
+it('has default visitor id cookie config values', function () {
+    expect(config('cookie-consent.VISITOR_ID_COOKIE'))->toBe('anonymous_visitor_id');
+    expect(config('cookie-consent.VISITOR_ID_COOKIE_LIFETIME_DAYS'))->toBe(400);
 });
 
 it('has default config values', function () {
