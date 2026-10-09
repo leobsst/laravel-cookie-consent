@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v2.0.26 - 2026-10-09
+
+**Full Changelog**: https://github.com/leobsst/laravel-cookie-consent/compare/v2.0.25...v2.0.26
+
 ## v2.0.25 - 2026-07-27
 
 ### Added
